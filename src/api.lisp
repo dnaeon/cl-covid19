@@ -6,6 +6,7 @@
   (:import-from :quri)
   (:import-from :jonathan)
   (:import-from :ascii-table)
+  (:import-from :log4cl)
   (:export
    :api-client
    :api-client-scheme
@@ -55,6 +56,7 @@
 
 (defun get-api-routes (client &rest rest)
   "Fetch the available API routes"
+  (log:debug "Fetching API routes")
   (let* ((uri (make-api-uri client))
          (resp (apply #'dexador:get uri rest)))
     (jonathan:parse resp :as :hash-table)))
@@ -72,12 +74,14 @@
 
 (defun get-api-countries (client &rest rest)
   "Retrieve the list of countries"
+  (log:debug "Fetching countries from API")
   (let* ((uri (make-api-uri client :path "/countries"))
          (resp (apply #'dexador:get uri rest)))
     (jonathan:parse resp)))
 
 (defun get-api-summary (client &rest rest)
   "Get summary stats per country"
+  (log:debug "Fetching summary data from API")
   (let* ((uri (make-api-uri client :path "/summary"))
          (resp (apply #'dexador:get uri rest)))
     (jonathan:parse resp)))
