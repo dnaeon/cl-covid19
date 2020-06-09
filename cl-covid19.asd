@@ -28,7 +28,8 @@
                 :serial t
                 :components ((:file "util")
                              (:file "api")
-                             (:file "db")))
+                             (:file "db")
+                             (:file "core")))
                (:module "client-package"
                 :pathname #P"src/"
                 :depends-on ("core")

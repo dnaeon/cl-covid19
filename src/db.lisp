@@ -87,7 +87,3 @@
                                 new-confirmed
                                 timestamp)))))))
 
-(defun update-db-data (api-client db-conn)
-  (log:debug "Updating database with latest data from remote API")
-  (persist-countries-data (cl-covid19.api:get-countries-data api-client) db-conn)
-  (persist-summary-data (getf (cl-covid19.api:get-summary-data api-client) :|Countries|) db-conn))
