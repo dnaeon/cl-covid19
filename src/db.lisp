@@ -13,7 +13,8 @@
    :disconnect-db-conn
    :migrate-db
    :db-execute
-   :persist-countries-data))
+   :persist-countries-data
+   :persist-summary-per-country-data))
 (in-package :cl-covid19.db)
 
 (defparameter *migrations-path*
@@ -48,13 +49,42 @@
 
 (defun persist-countries-data (items db-conn)
   "Persists the given ITEMS representing countries with the database"
-  (log:debug "Persisting countries data")
+  (log:debug "Persisting COUNTRY data")
   (let ((stmt (cl-dbi:prepare db-conn
                               "INSERT OR REPLACE INTO country (iso_code, name) VALUES (?, ?)")))
     (cl-dbi:with-transaction db-conn
       (dolist (item items)
         (let ((iso-code (getf item :ISO2))
               (name (getf item :|Country|)))
-          (log:debug "Persisting country ~a (~a)" name iso-code)
+          (log:debug "Persisting COUNTRY ~a (~a)" name iso-code)
           (cl-dbi:execute stmt (list iso-code name)))))))
+
+(defun persist-summary-per-country-data (items db-conn)
+  "Persists the given ITEMS representing summary per country data"
+  (log:debug "Persisting SUMMARY data")
+  (let* ((stmt (format nil
+                       "INSERT OR REPLACE ~
+                        INTO summary (country_id, total_recovered, new_recovered, total_deaths, new_deaths, total_confirmed, new_confirmed, timestamp) ~
+                        VALUES ((SELECT id FROM country WHERE iso_code = ?), ?, ?, ?, ?, ?, ?, ?)"))
+         (prepared (cl-dbi:prepare db-conn stmt)))
+    (cl-dbi:with-transaction db-conn
+      (dolist (item items)
+        (let ((iso-code (getf item :|CountryCode|))
+              (total-recovered (getf item :|TotalRecovered|))
+              (new-recovered (getf item :|NewRecovered|))
+              (total-deaths (getf item :|TotalDeaths|))
+              (new-deaths (getf item :|NewDeaths|))
+              (total-confirmed (getf item :|TotalConfirmed|))
+              (new-confirmed (getf item :|NewConfirmed|))
+              (timestamp (getf item :|Date|)))
+          (log:debug "Persisting SUMMARY for ~a @ ~a" iso-code timestamp)
+          (cl-dbi:execute prepared
+                          (list iso-code
+                                total-recovered
+                                new-recovered
+                                total-deaths
+                                new-deaths
+                                total-confirmed
+                                new-confirmed
+                                timestamp)))))))
 
