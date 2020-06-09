@@ -19,8 +19,8 @@
    :make-api-uri
    :get-api-routes
    :display-api-routes
-   :get-api-countries
-   :get-api-summary))
+   :get-countries-data
+   :get-summary-data))
 (in-package :cl-covid19.api)
 
 (defparameter *endpoint*
@@ -73,15 +73,15 @@
                                          (getf v :|Name|))))
     (ascii-table:display table out)))
 
-(defun get-api-countries (client &rest rest)
+(defun get-countries-data (client &rest rest)
   "Retrieve the list of countries"
   (log:debug "Fetching countries from API")
   (let* ((uri (make-api-uri client :path "/countries"))
          (resp (apply #'dexador:get uri rest)))
     (jonathan:parse resp)))
 
-(defun get-api-summary (client &rest rest)
-  "Get summary stats per country"
+(defun get-summary-data (client &rest rest)
+  "Retrieve summary stats"
   (log:debug "Fetching summary data from API")
   (let* ((uri (make-api-uri client :path "/summary"))
          (resp (apply #'dexador:get uri rest)))
