@@ -20,7 +20,8 @@
    :get-api-routes
    :display-api-routes
    :get-countries-data
-   :get-summary-data))
+   :get-summary-data
+   :api-version))
 (in-package :cl-covid19.api)
 
 (defparameter *endpoint*
@@ -66,8 +67,9 @@
 
 (defun display-api-routes (client &optional (out *standard-output*))
   "Display the API routes in a table"
-  (let ((routes (get-api-routes client))
-        (table (ascii-table:make-table '("PATH" "NAME") :header "API Routes")))
+  (let* ((routes (get-api-routes client))
+         (version (api-version client))
+         (table (ascii-table:make-table '("PATH" "NAME") :header (format nil "API Routes @ v~a" version))))
     (doplist (k v routes)
         (ascii-table:add-row table (list (getf v :|Path|)
                                          (getf v :|Name|))))
@@ -84,5 +86,11 @@
   "Retrieve summary stats"
   (log:debug "Fetching summary data from API")
   (let* ((uri (make-api-uri client :path "/summary"))
+         (resp (apply #'dexador:get uri rest)))
+    (jonathan:parse resp)))
+
+(defun api-version (client &rest rest)
+  "Retrieves the remote API version"
+  (let* ((uri (make-api-uri client :path "/version"))
          (resp (apply #'dexador:get uri rest)))
     (jonathan:parse resp)))
