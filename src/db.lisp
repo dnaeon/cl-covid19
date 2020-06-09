@@ -11,7 +11,8 @@
    :*migrations-path*
    :make-db-conn
    :disconnect-db-conn
-   :migrate-db))
+   :migrate-db
+   :db-execute))
 (in-package :cl-covid19.db)
 
 (defparameter *migrations-path*
@@ -37,14 +38,9 @@
     (cl-migratum:driver-init driver)
     (cl-migratum:apply-pending driver)))
 
-(defun sync-countries-with-db (items db-conn)
-  "Syncs the given items representing countries with the database"
-  (log:debug "Syncing countries with database")
-  (let ((stmt (cl-dbi:prepare db-conn
-                              "INSERT INTO country (iso_alpha_2, name) VALUES (?, ?) ON CONFLICT DO NOTHING")))
+(defun db-execute (db-conn stmt &rest params)
+  "Execute a given statement against the database"
+  (log:debug "Executing `~a` (params ~a)" stmt params)
+  (let ((stmt (cl-dbi:prepare db-conn stmt)))
     (cl-dbi:with-transaction db-conn
-      (dolist (item items)
-        (let ((iso-alpha-2 (getf item :ISO2))
-              (name (getf item :|Country|)))
-          (log:debug "Syncing country ~a" name)
-          (cl-dbi:execute stmt (list iso-alpha-2 name)))))))
+      (cl-dbi:fetch-all (cl-dbi:execute stmt params)))))
