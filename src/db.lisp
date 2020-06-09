@@ -13,8 +13,7 @@
    :disconnect-db-conn
    :migrate-db
    :db-execute
-   :persist-countries-data
-   :persist-summary-per-country-data))
+   :update-db-data))
 (in-package :cl-covid19.db)
 
 (defparameter *migrations-path*
@@ -88,3 +87,7 @@
                                 new-confirmed
                                 timestamp)))))))
 
+(defun update-db-data (api-client db-conn)
+  (log:debug "Updating database with latest data from remote API")
+  (persist-countries-data (cl-covid19.api:get-countries-data api-client) db-conn)
+  (persist-summary-data (getf (cl-covid19.api:get-summary-data api-client) :|Countries|) db-conn))
