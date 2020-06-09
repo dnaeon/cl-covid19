@@ -2,6 +2,9 @@
 (defpackage :cl-covid19.api
   (:nicknames :covid19.api)
   (:use :cl)
+  (:import-from
+   :alexandria
+   :doplist)
   (:import-from :dexador)
   (:import-from :quri)
   (:import-from :jonathan)
@@ -59,17 +62,15 @@
   (log:debug "Fetching API routes")
   (let* ((uri (make-api-uri client))
          (resp (apply #'dexador:get uri rest)))
-    (jonathan:parse resp :as :hash-table)))
+    (jonathan:parse resp)))
 
 (defun display-api-routes (client &optional (out *standard-output*))
   "Display the API routes in a table"
   (let ((routes (get-api-routes client))
         (table (ascii-table:make-table '("PATH" "NAME") :header "API Routes")))
-    (maphash (lambda (k v)
-               (declare (ignore k))
-               (ascii-table:add-row table (list (gethash "Path" v)
-                                                (gethash "Name" v))))
-             routes)
+    (doplist (k v routes)
+        (ascii-table:add-row table (list (getf v :|Path|)
+                                         (getf v :|Name|))))
     (ascii-table:display table out)))
 
 (defun get-api-countries (client &rest rest)
