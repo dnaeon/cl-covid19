@@ -59,7 +59,7 @@
           (log:debug "Persisting COUNTRY ~a (~a)" name iso-code)
           (cl-dbi:execute stmt (list iso-code name)))))))
 
-(defun persist-summary-per-country-data (items db-conn)
+(defun persist-summary-data (items db-conn)
   "Persists the given ITEMS representing summary per country data"
   (log:debug "Persisting SUMMARY data")
   (let* ((stmt (format nil
