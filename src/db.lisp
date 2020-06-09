@@ -12,7 +12,8 @@
    :make-db-conn
    :disconnect-db-conn
    :migrate-db
-   :db-execute))
+   :db-execute
+   :persist-countries-data))
 (in-package :cl-covid19.db)
 
 (defparameter *migrations-path*
@@ -44,3 +45,16 @@
   (let ((stmt (cl-dbi:prepare db-conn stmt)))
     (cl-dbi:with-transaction db-conn
       (cl-dbi:fetch-all (cl-dbi:execute stmt params)))))
+
+(defun persist-countries-data (items db-conn)
+  "Persists the given ITEMS representing countries with the database"
+  (log:debug "Persisting countries data")
+  (let ((stmt (cl-dbi:prepare db-conn
+                              "INSERT OR REPLACE INTO country (iso_code, name) VALUES (?, ?)")))
+    (cl-dbi:with-transaction db-conn
+      (dolist (item items)
+        (let ((iso-code (getf item :ISO2))
+              (name (getf item :|Country|)))
+          (log:debug "Persisting country ~a (~a)" name iso-code)
+          (cl-dbi:execute stmt (list iso-code name)))))))
+
