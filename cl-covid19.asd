@@ -15,7 +15,8 @@
   :bug-tracker "https://github.com/dnaeon/cl-covid19"
   :source-control "https://github.com/dnaeon/cl-covid19"
   :long-name "cl-covid19"
-  :depends-on (:quri
+  :depends-on (:alexandria
+               :quri
                :dexador
                :jonathan
                :cl-ascii-table
