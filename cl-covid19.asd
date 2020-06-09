@@ -25,7 +25,9 @@
                :cl-migratum.driver.sql)
   :components ((:module "core"
                 :pathname #P"src/"
-                :components ((:file "api")
+                :serial t
+                :components ((:file "util")
+                             (:file "api")
                              (:file "db")))
                (:module "client-package"
                 :pathname #P"src/"
