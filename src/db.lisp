@@ -50,7 +50,7 @@
   "Persists the given ITEMS representing countries with the database"
   (log:debug "Persisting COUNTRY data")
   (let ((stmt (cl-dbi:prepare db-conn
-                              "INSERT OR REPLACE INTO country (iso_code, name) VALUES (?, ?)")))
+                              "INSERT INTO country (iso_code, name) VALUES (?, ?) ON CONFLICT DO NOTHING")))
     (cl-dbi:with-transaction db-conn
       (dolist (item items)
         (let ((iso-code (getf item :ISO2))
