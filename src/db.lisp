@@ -13,7 +13,8 @@
    :disconnect-db-conn
    :migrate-db
    :db-execute
-   :update-db-data))
+   :persist-countries-data
+   :persist-summary-data))
 (in-package :cl-covid19.db)
 
 (defparameter *migrations-path*
