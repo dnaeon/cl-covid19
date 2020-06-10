@@ -21,6 +21,7 @@
    :display-api-routes
    :get-countries-data
    :get-summary-data
+   :get-time-series-archive
    :api-version))
 (in-package :cl-covid19.api)
 
@@ -88,6 +89,12 @@
   (let* ((uri (make-api-uri client :path "/summary"))
          (resp (apply #'dexador:get uri rest)))
     (jonathan:parse resp)))
+
+(defun get-time-series-archive (client destination &rest rest)
+  "Download all time series data as a ZIP archive"
+  (log:debug "Fetching time series data as a ZIP archive in ~a" destination)
+  (let ((uri (make-api-uri client :path "/export")))
+    (apply #'dex:fetch uri destination rest)))
 
 (defun api-version (client &rest rest)
   "Retrieves the remote API version"
