@@ -2,7 +2,12 @@
 (defpackage :cl-covid19.core
   (:use :cl)
   (:nicknames :covid19.core)
+  (:import-from :ascii-table)
   (:import-from :log4cl)
+  (:import-from
+   :cl-covid19.util
+   :plist-keys
+   :plist-values)
   (:import-from
    :cl-covid19.db
    :persist-countries-data
@@ -14,7 +19,8 @@
   (:export
    :update-db-countries-data
    :update-db-summary-data
-   :update-db-all-data))
+   :update-db-all-data
+   :display-table))
 (in-package :cl-covid19.core)
 
 (defun update-db-countries-data (api-client db-conn)
@@ -32,3 +38,12 @@
   (log:debug "Updating database with latest data from remote API")
   (update-db-countries-data api-client db-conn)
   (update-db-summary-data api-client db-conn))
+
+(defun display-table (items)
+  "Displays a table view of the items. Useful when used in combination with COVID19:DB-EXECUTE results"
+  (let* ((columns (mapcar #'string
+                          (plist-keys (first items))))
+         (table (ascii-table:make-table columns)))
+    (dolist (item items)
+      (ascii-table:add-row table (plist-values item)))
+    (ascii-table:display table)))
