@@ -50,22 +50,37 @@
 (defun persist-countries-data (items db-conn)
   "Persists the given ITEMS representing countries with the database"
   (log:debug "Persisting COUNTRY data")
-  (let ((stmt (cl-dbi:prepare db-conn
-                              "INSERT INTO country (iso_code, name) VALUES (?, ?) ON CONFLICT DO NOTHING")))
+  (let* ((stmt (format nil "INSERT ~
+                            INTO country (iso_code, name, slug) ~
+                            VALUES ($1, $2, $3) ~
+                            ON CONFLICT (iso_code) DO UPDATE ~
+                            SET ~
+                                name = $2, ~
+                                slug = $3"))
+        (prepared (cl-dbi:prepare db-conn stmt)))
     (cl-dbi:with-transaction db-conn
       (dolist (item items)
         (let ((iso-code (getf item :ISO2))
-              (name (getf item :|Country|)))
+              (name (getf item :|Country|))
+              (slug (getf item :|Slug|)))
           (log:debug "Persisting COUNTRY ~a (~a)" name iso-code)
-          (cl-dbi:execute stmt (list iso-code name)))))))
+          (cl-dbi:execute prepared (list iso-code name slug)))))))
 
 (defun persist-summary-data (items db-conn)
   "Persists the given ITEMS representing summary per country data"
   (log:debug "Persisting SUMMARY data")
   (let* ((stmt (format nil
-                       "INSERT OR REPLACE ~
+                       "INSERT ~
                         INTO summary (country_id, total_recovered, new_recovered, total_deaths, new_deaths, total_confirmed, new_confirmed, timestamp) ~
-                        VALUES ((SELECT id FROM country WHERE iso_code = ?), ?, ?, ?, ?, ?, ?, ?)"))
+                        VALUES ((SELECT id FROM country WHERE iso_code = $1), $2, $3, $4, $5, $6, $7, $8) ~
+                        ON CONFLICT (country_id, timestamp) DO UPDATE ~
+                        SET ~
+                            total_recovered = $2, ~
+                            new_recovered = $3, ~
+                            total_deaths = $4, ~
+                            new_deaths = $5, ~
+                            total_confirmed = $6, ~
+                            new_confirmed = $7"))
          (prepared (cl-dbi:prepare db-conn stmt)))
     (cl-dbi:with-transaction db-conn
       (dolist (item items)
