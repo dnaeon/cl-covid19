@@ -22,7 +22,10 @@
                :cl-ascii-table
                :cl-migratum
                :cl-migratum.provider.local-path
-               :cl-migratum.driver.sql)
+               :cl-migratum.driver.sql
+               :zip
+               :tmpdir
+               :flexi-streams)
   :components ((:module "core"
                 :pathname #P"src/"
                 :serial t
