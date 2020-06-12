@@ -14,7 +14,6 @@
    :migrate-db
    :db-execute
    :persist-countries-data
-   :persist-summary-data
    :persist-time-series-data))
 (in-package :cl-covid19.db)
 
@@ -66,43 +65,6 @@
               (slug (getf item :|Slug|)))
           (log:debug "Persisting COUNTRY ~a (~a)" name iso-code)
           (cl-dbi:execute prepared (list iso-code name slug)))))))
-
-(defun persist-summary-data (items db-conn)
-  "Persists the given ITEMS representing summary per country data"
-  (log:debug "Persisting SUMMARY data")
-  (let* ((stmt (format nil
-                       "INSERT ~
-                        INTO summary (country_id, total_recovered, new_recovered, total_deaths, new_deaths, total_confirmed, new_confirmed, timestamp) ~
-                        VALUES ((SELECT id FROM country WHERE iso_code = $1), $2, $3, $4, $5, $6, $7, $8) ~
-                        ON CONFLICT (country_id, timestamp) DO UPDATE ~
-                        SET ~
-                            total_recovered = $2, ~
-                            new_recovered = $3, ~
-                            total_deaths = $4, ~
-                            new_deaths = $5, ~
-                            total_confirmed = $6, ~
-                            new_confirmed = $7"))
-         (prepared (cl-dbi:prepare db-conn stmt)))
-    (cl-dbi:with-transaction db-conn
-      (dolist (item items)
-        (let ((iso-code (getf item :|CountryCode|))
-              (total-recovered (getf item :|TotalRecovered|))
-              (new-recovered (getf item :|NewRecovered|))
-              (total-deaths (getf item :|TotalDeaths|))
-              (new-deaths (getf item :|NewDeaths|))
-              (total-confirmed (getf item :|TotalConfirmed|))
-              (new-confirmed (getf item :|NewConfirmed|))
-              (timestamp (getf item :|Date|)))
-          (log:debug "Persisting SUMMARY for ~a @ ~a" iso-code timestamp)
-          (cl-dbi:execute prepared
-                          (list iso-code
-                                total-recovered
-                                new-recovered
-                                total-deaths
-                                new-deaths
-                                total-confirmed
-                                new-confirmed
-                                timestamp)))))))
 
 (defun persist-time-series-data (items db-conn)
   "Persists the given ITEMS representing time series data"

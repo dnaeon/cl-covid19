@@ -30,12 +30,6 @@
   (persist-countries-data (get-countries-data api-client) db-conn)
   t)
 
-(defun update-summary-data (api-client db-conn)
-  "Updates the local database with the latest summary data from the remote API"
-  (log:debug "Updating database with latest summary data from remote API")
-  (persist-summary-data (getf (get-summary-data api-client) :|Countries|) db-conn)
-  t)
-
 (defun update-all-data (api-client db-conn)
   "Updates the local database with the data retrieved from the remote API"
   (log:debug "Updating database with latest data from remote API")
