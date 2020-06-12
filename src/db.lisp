@@ -81,7 +81,7 @@
                                 deaths = $3, ~
                                 recovered = $4, ~
                                 active = $5"))
-         (prepared (cl-dbi:prepare db-conn time-series-stmt)))
+         (prepared (cl-dbi:prepare db-conn stmt)))
     (cl-dbi:with-transaction db-conn
       (dolist (item items)
         (let ((country-name (getf item :|Country|))
