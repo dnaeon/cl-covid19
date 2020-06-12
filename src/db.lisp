@@ -107,55 +107,30 @@
 (defun persist-time-series-data (items db-conn)
   "Persists the given ITEMS representing time series data"
   (log:debug "Persisting TIME SERIES data")
-  (let* ((location-stmt (format nil "INSERT ~
-                                     INTO location (country_id, province, city_name, city_code, lat, lon) ~
-                                     VALUES ((SELECT id FROM country WHERE iso_code = $1), $2, $3, $4, $5, $6) ~
-                                     ON CONFLICT (lat, lon) DO UPDATE ~
-                                     SET ~
-                                         province = $2, ~
-                                         city_name = $3, ~
-                                         city_code = $4"))
-         (location-stmt-prepared (cl-dbi:prepare db-conn location-stmt))
-         (time-series-stmt (format nil "INSERT ~
-                                        INTO time_series (country_id, location_id, confirmed, deaths, recovered, active, timestamp) ~
-                                        VALUES ( ~
-                                            (SELECT id FROM country WHERE iso_code = $1), ~
-                                            (SELECT id FROM location WHERE lat = $2 AND lon = $3), ~
-                                            $4, $5, $6, $7, $8 ~
-                                        ) ~
-                                        ON CONFLICT (country_id, location_id, timestamp) DO UPDATE ~
-                                        SET ~
-                                            confirmed = $4, ~
-                                            deaths = $5, ~
-                                            recovered = $6, ~
-                                            active = $7"))
-         (time-series-stmt-prepared (cl-dbi:prepare db-conn time-series-stmt)))
+  (let* ((stmt (format nil "INSERT ~
+                            INTO time_series (country_id, confirmed, deaths, recovered, active, timestamp) ~
+                            VALUES ( ~
+                                (SELECT id FROM country WHERE name = $1), ~
+                                $2, $3, $4, $5, $6 ~
+                            ) ~
+                            ON CONFLICT (country_id, timestamp) DO UPDATE ~
+                            SET ~
+                                confirmed = $2, ~
+                                deaths = $3, ~
+                                recovered = $4, ~
+                                active = $5"))
+         (prepared (cl-dbi:prepare db-conn time-series-stmt)))
     (cl-dbi:with-transaction db-conn
       (dolist (item items)
-        (let ((iso-code (getf item :|CountryCode|))
+        (let ((country-name (getf item :|Country|))
               (confirmed (getf item :|Confirmed|))
               (deaths (getf item :|Deaths|))
               (recovered (getf item :|Recovered|))
               (active (getf item :|Active|))
-              (timestamp (getf item :|Date|))
-              (province (getf item :|Province|))
-              (city-name (getf item :|City|))
-              (city-code (getf item :|CityCode|))
-              (lat (getf item :|Lat|))
-              (lon (getf item :|Lon|)))
-          (log:debug "Persisting LOCATION lat ~a lon ~a @ ~a" lat lon iso-code)
-          (cl-dbi:execute location-stmt-prepared (list iso-code
-                                                       province
-                                                       city-name
-                                                       city-code
-                                                       lat
-                                                       lon))
-
-          (log:debug "Persisting TIME SERIES for lat ~a lon ~a country ~a @ ~a" lat lon iso-code timestamp)
-          (cl-dbi:execute time-series-stmt-prepared
-                          (list iso-code
-                                lat
-                                lon
+              (timestamp (getf item :|Date|)))
+          (log:debug "Persisting TIME SERIES for ~a @ ~a" country-name timestamp)
+          (cl-dbi:execute prepared
+                          (list country-name
                                 confirmed
                                 deaths
                                 recovered

@@ -4,10 +4,6 @@
   (:nicknames :covid19.core)
   (:import-from :ascii-table)
   (:import-from :log4cl)
-  (:import-from :zip)
-  (:import-from :flexi-streams)
-  (:import-from :tmpdir)
-  (:import-from :jonathan)
   (:import-from
    :cl-covid19.util
    :plist-keys
@@ -15,16 +11,14 @@
   (:import-from
    :cl-covid19.db
    :persist-countries-data
-   :persist-summary-data
-   :persist-time-series-data)
+   :persist-time-series-data
+   :db-execute)
   (:import-from
    :cl-covid19.api
    :get-countries-data
-   :get-summary-data
-   :get-time-series-archive)
+   :get-time-series-for-country)
   (:export
    :update-countries-data
-   :update-summary-data
    :update-time-series-data
    :update-all-data
    :display-table))
@@ -46,25 +40,18 @@
   "Updates the local database with the data retrieved from the remote API"
   (log:debug "Updating database with latest data from remote API")
   (update-countries-data api-client db-conn)
-  (update-summary-data api-client db-conn)
   (update-time-series-data api-client db-conn)
   t)
 
 (defun update-time-series-data (api-client db-conn)
   "Updates the local database with the latest time series data from the remote API"
   (log:debug "Updating database with latest time series data from remote API")
-  (let* ((tmpdir (tmpdir:mkdtemp))
-         (destination (merge-pathnames (make-pathname :name "covid19" :type "zip") tmpdir)))
-    (get-time-series-archive api-client destination)
-    (log:debug "Time series data fetched successfully, processing items")
-    (zip:with-zipfile (zip-archive destination)
-      (let* ((zip-entry-name "all.json")
-             (zip-entry (zip:get-zipfile-entry zip-entry-name zip-archive))
-             (contents (flexi-streams:octets-to-string (zip:zipfile-entry-contents zip-entry)))
-             (items (jonathan:parse contents)))
-        (persist-time-series-data items db-conn)))
-    (uiop:delete-directory-tree tmpdir :validate t)
-    t))
+  (let ((items (db-execute db-conn "SELECT slug FROM country")))
+    (dolist (item items)
+      (let* ((country (getf item :|slug|))
+             (time-series (get-time-series-for-country api-client country)))
+        (persist-time-series-data time-series db-conn))))
+  t)
 
 (defun display-table (items)
   "Displays a table view of the items. Useful when used in combination with COVID19:DB-EXECUTE results"

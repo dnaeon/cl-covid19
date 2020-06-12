@@ -22,6 +22,7 @@
    :get-countries-data
    :get-summary-data
    :get-time-series-archive
+   :get-time-series-for-country
    :api-version))
 (in-package :cl-covid19.api)
 
@@ -95,6 +96,14 @@
   (log:debug "Fetching time series data as a ZIP archive in ~a" destination)
   (let ((uri (make-api-uri client :path "/export")))
     (apply #'dex:fetch uri destination rest)))
+
+(defun get-time-series-for-country (client country &rest rest)
+  "Retrieve the time series data for a given country"
+  (log:debug "Fetching time series for country ~a" country)
+  (let* ((uri (make-api-uri client
+                            :path (format nil "/total/country/~a" (quri:url-encode country))))
+         (resp (apply #'dexador:get uri rest)))
+    (jonathan:parse resp)))
 
 (defun api-version (client &rest rest)
   "Retrieves the remote API version"
