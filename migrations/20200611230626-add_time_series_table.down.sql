@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS time_series;
+DROP TABLE time_series;
