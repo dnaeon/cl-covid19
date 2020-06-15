@@ -47,6 +47,11 @@
     (cl-dbi:with-transaction db-conn
       (cl-dbi:fetch-all (cl-dbi:execute stmt params)))))
 
+(defun table-info (db-conn table)
+  "Get details about a given table"
+  (let ((query (format nil "PRAGMA table_info(~a)" table)))
+    (db-execute db-conn query)))
+
 (defun persist-countries-data (items db-conn)
   "Persists the given ITEMS representing countries with the database"
   (log:debug "Persisting COUNTRY data")
