@@ -54,4 +54,5 @@
          (table (ascii-table:make-table columns)))
     (dolist (item items)
       (ascii-table:add-row table (plist-values item)))
-    (ascii-table:display table)))
+    (when items
+      (ascii-table:display table))))
