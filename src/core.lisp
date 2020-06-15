@@ -18,6 +18,7 @@
    :get-countries-data
    :get-time-series-for-country)
   (:export
+   :*default-result-limit*
    :update-countries-data
    :update-time-series-data
    :update-all-data
@@ -29,6 +30,10 @@
    :fetch-time-series-for-country
    :fetch-time-series-global))
 (in-package :cl-covid19.core)
+
+(defparameter *default-result-limit*
+  100
+  "The default number of items to return when fetching data from the database")
 
 (defun update-countries-data (api-client db-conn)
   "Updates the local database with the latest countries data from the remote API"
@@ -75,12 +80,12 @@
                               LOWER(slug) = LOWER($1)")))
     (db-execute db-conn query name)))
 
-(defun fetch-countries (db-conn &key (limit 100))
+(defun fetch-countries (db-conn &key (limit *default-result-limit*))
   "Fetch countries from the database"
   (log:debug "Fetching countries from database")
   (db-execute db-conn "SELECT * FROM country LIMIT ?" limit))
 
-(defun fetch-time-series (db-conn &key (limit 100))
+(defun fetch-time-series (db-conn &key (limit *default-result-limit*))
   "Fetches time series data from the database"
   (log:debug "Fetching time series from database")
   (let ((query (format nil "SELECT * ~
@@ -89,7 +94,7 @@
                             LIMIT ?")))
   (db-execute db-conn query limit)))
 
-(defun fetch-time-series-latest (db-conn &key (limit 100))
+(defun fetch-time-series-latest (db-conn &key (limit *default-result-limit*))
   "Fetch latest time series data from the database"
   (log:debug "Fetching latest time series from database")
   (let ((query (format nil "SELECT * ~
@@ -97,7 +102,7 @@
                             LIMIT ?")))
     (db-execute db-conn query limit)))
 
-(defun fetch-time-series-for-country (db-conn name &key (limit 100))
+(defun fetch-time-series-for-country (db-conn name &key (limit *default-result-limit*))
   "Fetch time series data for a given country from the database"
   (log:debug "Fetching time series for country ~a from database" name)
   (let ((query (format nil "SELECT * ~
@@ -112,7 +117,7 @@
                             LIMIT $2")))
     (db-execute db-conn query name limit)))
 
-(defun fetch-time-series-global (db-conn &key (limit 100))
+(defun fetch-time-series-global (db-conn &key (limit *default-result-limit*))
   "Fetch global time series data from the database"
   (let ((query (format nil "SELECT * ~
                             FROM time_series_global ~
