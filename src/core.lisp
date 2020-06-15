@@ -21,7 +21,9 @@
    :update-countries-data
    :update-time-series-data
    :update-all-data
-   :display-table))
+   :display-table
+   :fetch-country
+   :fetch-countries))
 (in-package :cl-covid19.core)
 
 (defun update-countries-data (api-client db-conn)
@@ -56,3 +58,18 @@
       (ascii-table:add-row table (plist-values item)))
     (when items
       (ascii-table:display table))))
+
+(defun fetch-country (db-conn name)
+  "Fetch a country by name from the database"
+  (let ((query (format nil "SELECT * FROM country ~
+                            WHERE ~
+                              LOWER(name) = LOWER($1) ~
+                            OR ~
+                              LOWER(iso_code) = LOWER($1) ~
+                            OR ~
+                              LOWER(slug) = LOWER($1)")))
+    (db-execute db-conn query name)))
+
+(defun fetch-countries (db-conn &key (limit 100))
+  "Fetch countries from the database"
+  (db-execute db-conn "SELECT * FROM country LIMIT ?" limit))
