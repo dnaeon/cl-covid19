@@ -13,6 +13,8 @@
    :disconnect-db-conn
    :migrate-db
    :db-execute
+   :table-info
+   :table-columns
    :persist-countries-data
    :persist-time-series-data))
 (in-package :cl-covid19.db)
