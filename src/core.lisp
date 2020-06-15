@@ -23,7 +23,10 @@
    :update-all-data
    :display-table
    :fetch-country
-   :fetch-countries))
+   :fetch-countries
+   :fetch-time-series
+   :fetch-time-series-latest
+   :fetch-time-series-for-country))
 (in-package :cl-covid19.core)
 
 (defun update-countries-data (api-client db-conn)
@@ -61,6 +64,7 @@
 
 (defun fetch-country (db-conn name)
   "Fetch a country by name from the database"
+  (log:debug "Fetching country ~a from database" name)
   (let ((query (format nil "SELECT * FROM country ~
                             WHERE ~
                               LOWER(name) = LOWER($1) ~
@@ -72,4 +76,37 @@
 
 (defun fetch-countries (db-conn &key (limit 100))
   "Fetch countries from the database"
+  (log:debug "Fetching countries from database")
   (db-execute db-conn "SELECT * FROM country LIMIT ?" limit))
+
+(defun fetch-time-series (db-conn &key (limit 100))
+  "Fetches time series data from the database"
+  (log:debug "Fetching time series from database")
+  (let ((query (format nil "SELECT * ~
+                            FROM time_series_per_country ~
+                            ORDER BY timestamp DESC ~
+                            LIMIT ?")))
+  (db-execute db-conn query limit)))
+
+(defun fetch-time-series-latest (db-conn &key (limit 100))
+  "Fetch latest time series data from the database"
+  (log:debug "Fetching latest time series from database")
+  (let ((query (format nil "SELECT * ~
+                            FROM time_series_per_country_latest ~
+                            LIMIT ?")))
+    (db-execute db-conn query limit)))
+
+(defun fetch-time-series-for-country (db-conn name &key (limit 100))
+  "Fetch time series data for a given country"
+  (log:debug "Fetching time series for country ~a from database" name)
+  (let ((query (format nil "SELECT * ~
+                            FROM time_series_per_country ~
+                            WHERE ~
+                                LOWER(country_name) = LOWER($1) ~
+                            OR ~
+                                LOWER(country_iso_code) = LOWER($1) ~
+                            OR ~
+                                LOWER(country_slug) = LOWER($1) ~
+                            ORDER BY timestamp DESC ~
+                            LIMIT $2")))
+    (db-execute db-conn query name limit)))
