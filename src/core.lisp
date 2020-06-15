@@ -26,7 +26,8 @@
    :fetch-countries
    :fetch-time-series
    :fetch-time-series-latest
-   :fetch-time-series-for-country))
+   :fetch-time-series-for-country
+   :fetch-time-series-global))
 (in-package :cl-covid19.core)
 
 (defun update-countries-data (api-client db-conn)
@@ -97,7 +98,7 @@
     (db-execute db-conn query limit)))
 
 (defun fetch-time-series-for-country (db-conn name &key (limit 100))
-  "Fetch time series data for a given country"
+  "Fetch time series data for a given country from the database"
   (log:debug "Fetching time series for country ~a from database" name)
   (let ((query (format nil "SELECT * ~
                             FROM time_series_per_country ~
@@ -110,3 +111,11 @@
                             ORDER BY timestamp DESC ~
                             LIMIT $2")))
     (db-execute db-conn query name limit)))
+
+(defun fetch-time-series-global (db-conn &key (limit 100))
+  "Fetch global time series data from the database"
+  (let ((query (format nil "SELECT * ~
+                            FROM time_series_global ~
+                            ORDER BY timestamp DESC ~
+                            LIMIT ?")))
+    (db-execute db-conn query limit)))
