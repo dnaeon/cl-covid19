@@ -52,6 +52,13 @@
   (let ((query (format nil "PRAGMA table_info(~a)" table)))
     (db-execute db-conn query)))
 
+(defun table-columns (db-conn table)
+  "Get the list of columns for a given table"
+  (let ((info (table-info db-conn table)))
+    (mapcar (lambda (item)
+              (getf item :|name|))
+            info)))
+
 (defun persist-countries-data (items db-conn)
   "Persists the given ITEMS representing countries with the database"
   (log:debug "Persisting COUNTRY data")
