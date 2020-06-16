@@ -19,6 +19,7 @@
                :quri
                :dexador
                :jonathan
+               :cl-csv
                :cl-ascii-table
                :cl-migratum
                :cl-migratum.provider.local-path

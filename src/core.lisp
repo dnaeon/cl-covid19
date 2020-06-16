@@ -3,6 +3,7 @@
   (:use :cl)
   (:nicknames :covid19.core)
   (:import-from :ascii-table)
+  (:import-from :cl-csv)
   (:import-from :log4cl)
   (:import-from
    :cl-covid19.util
@@ -23,6 +24,7 @@
    :update-countries-data
    :update-time-series-data
    :update-all-data
+   :write-csv
    :display-table
    :fetch-country
    :fetch-countries
@@ -69,6 +71,16 @@
       (ascii-table:add-row table (plist-values item)))
     (when items
       (ascii-table:display table))))
+
+(defun write-csv (items &key stream)
+  "Writes the given items in CSV format"
+  (let ((headers (plist-keys (first items)))
+        (output (or stream (make-string-output-stream))))
+    (cl-csv:write-csv-row headers :stream output)
+    (dolist (item items)
+      (cl-csv:write-csv-row (plist-values item) :stream output))
+    (unless stream
+      (get-output-stream-string output))))
 
 (defun fetch-country (db-conn name)
   "Fetch a country by name from the database"
