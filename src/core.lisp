@@ -12,7 +12,8 @@
    :cl-covid19.db
    :persist-countries-data
    :persist-time-series-data
-   :db-execute)
+   :db-execute
+   :table-columns)
   (:import-from
    :cl-covid19.api
    :get-countries-data
@@ -28,7 +29,8 @@
    :fetch-time-series
    :fetch-time-series-latest
    :fetch-time-series-for-country
-   :fetch-time-series-global))
+   :fetch-time-series-global
+   :fetch-top-countries-by))
 (in-package :cl-covid19.core)
 
 (defparameter *default-result-limit*
@@ -124,3 +126,16 @@
                             ORDER BY timestamp DESC ~
                             LIMIT ?")))
     (db-execute db-conn query limit)))
+
+(defun fetch-top-countries-by (db-conn &key (column :confirmed) (limit *default-result-limit*))
+  "Fetch top latest countries from the database, sorted by the given column"
+  (unless (member column
+                  (table-columns db-conn "time_series_per_country_latest")
+                  :test #'string-equal)
+    (error "Column ~a does not exist" column))
+  (let ((query (format nil "SELECT * ~
+                            FROM time_series_per_country_latest ~
+                            ORDER BY ~a DESC ~
+                            LIMIT $1" (string column))))
+    (db-execute db-conn query limit)))
+
