@@ -19,6 +19,10 @@
    :cl-covid19.api
    :get-countries-data
    :get-time-series-for-country)
+  (:import-from
+   :cl-covid19.gnuplot-template
+   :*gnuplot-with-filled-curves-template*
+   :render-gnuplot-template)
   (:export
    :*default-result-limit*
    :update-countries-data
@@ -32,7 +36,9 @@
    :fetch-time-series-latest
    :fetch-time-series-for-country
    :fetch-time-series-global
-   :fetch-top-countries-by))
+   :fetch-top-countries-by
+   :plot-data
+   :plot-time-series-for-country))
 (in-package :cl-covid19.core)
 
 (defparameter *default-result-limit*
@@ -134,6 +140,7 @@
 
 (defun fetch-time-series-global (db-conn &key (limit *default-result-limit*))
   "Fetch global time series data from the database"
+  (log:debug "Fetching global time series data from database")
   (let ((query (format nil "SELECT * ~
                             FROM time_series_global ~
                             ORDER BY timestamp DESC ~
@@ -142,6 +149,7 @@
 
 (defun fetch-top-countries-by (db-conn &key (column :confirmed) (limit *default-result-limit*))
   "Fetch top latest countries from the database, sorted by the given column"
+  (log:debug "Fetching latest top countries by ~a column" column)
   (unless (member column
                   (table-columns db-conn "time_series_per_country_latest")
                   :test #'string-equal)
@@ -152,3 +160,28 @@
                             LIMIT $1" (string column))))
     (db-execute db-conn query limit)))
 
+(defun plot-time-series-for-country (db-conn country &key (template *gnuplot-with-filled-curves-template*) (limit *default-result-limit*))
+  "Plot time series data for a given country"
+  (log:debug "Plotting time series data for country ~a" country)
+  (plot-data (lambda ()
+               (fetch-time-series-for-country db-conn country :limit limit))
+             template
+             :title country))
+
+(defun plot-data (data-fun template &rest rest)
+  "Plot the data returned by DATA-FUN using the given TEMPLATE"
+  (tmpdir:with-tmpdir (tmpdir)
+    (let* ((data-file (merge-pathnames (make-pathname :name "covid19" :type "dat") tmpdir))
+           (plt-file (merge-pathnames (make-pathname :name "gnuplot" :type "plt") tmpdir))
+           (data-points (funcall data-fun))
+           (plt-script (apply #'render-gnuplot-template template :datafile data-file rest)))
+      (unless data-points
+        (error "No data points returned by function"))
+      (with-open-file (out data-file :direction :output)
+        (write-csv data-points :stream out :include-headers nil))
+      (with-open-file (out plt-file :direction :output)
+        (write-string plt-script out))
+      (uiop:run-program (list "gnuplot"
+                              "-p"
+                              (namestring plt-file)))
+      nil)))
