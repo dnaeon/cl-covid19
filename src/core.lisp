@@ -21,7 +21,8 @@
    :get-time-series-for-country)
   (:import-from
    :cl-covid19.gnuplot-template
-   :*gnuplot-with-filled-curves-template*
+   :*gnuplot-time-series-with-filled-curves-template*
+   :*gnuplot-histograms-per-country-template*
    :render-gnuplot-template)
   (:export
    :*default-result-limit*
@@ -39,11 +40,12 @@
    :fetch-top-countries-by
    :plot-data
    :plot-time-series-for-country
-   :plot-time-series-global))
+   :plot-time-series-global
+   :plot-top-countries-by))
 (in-package :cl-covid19.core)
 
 (defparameter *default-result-limit*
-  100
+  10
   "The default number of items to return when fetching data from the database")
 
 (defun update-countries-data (api-client db-conn)
@@ -161,7 +163,7 @@
                             LIMIT $1" (string column))))
     (db-execute db-conn query limit)))
 
-(defun plot-time-series-for-country (db-conn country &key (template *gnuplot-with-filled-curves-template*) (limit *default-result-limit*))
+(defun plot-time-series-for-country (db-conn country &key (template *gnuplot-time-series-with-filled-curves-template*) (limit *default-result-limit*))
   "Plot time series data for a given country"
   (log:debug "Plotting time series data for country ~a" country)
   (plot-data (lambda ()
@@ -169,13 +171,21 @@
              template
              :title country))
 
-(defun plot-time-series-global (db-conn &key (template *gnuplot-with-filled-curves-template*) (limit *default-result-limit*))
+(defun plot-time-series-global (db-conn &key (template *gnuplot-time-series-with-filled-curves-template*) (limit *default-result-limit*))
   "Plot global time series"
   (log:debug "Plotting global time series")
   (plot-data (lambda ()
                (fetch-time-series-global db-conn :limit limit))
              template
              :title "Global"))
+
+(defun plot-top-countries-by (db-conn &key (column :confirmed) (limit *default-result-limit*) (template *gnuplot-histograms-per-country-template*))
+  "Plot time series per country sorted by given column"
+  (log:debug "Plotting top countries by ~a" column)
+  (plot-data (lambda ()
+               (fetch-top-countries-by db-conn :column column :limit limit))
+             template
+             :title (format nil "Top countries by ~a" column)))
 
 (defun plot-data (data-fun template &rest rest)
   "Plot the data returned by DATA-FUN using the given TEMPLATE"
