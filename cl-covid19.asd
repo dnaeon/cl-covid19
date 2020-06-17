@@ -23,13 +23,16 @@
                :cl-ascii-table
                :cl-migratum
                :cl-migratum.provider.local-path
-               :cl-migratum.driver.sql)
+               :cl-migratum.driver.sql
+               :tmpdir
+               :djula)
   :components ((:module "core"
                 :pathname #P"src/"
                 :serial t
                 :components ((:file "util")
                              (:file "api")
                              (:file "db")
+                             (:file "gnuplot-template")
                              (:file "core")))
                (:module "client-package"
                 :pathname #P"src/"
