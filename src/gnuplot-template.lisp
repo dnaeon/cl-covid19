@@ -4,20 +4,25 @@
   (:nicknames :covid19.gnuplot-template)
   (:import-from :djula)
   (:export
-   :*gnuplot-with-filled-curves-template*
-   :*gnuplot-with-lines-template*
+   :*gnuplot-time-series-with-filled-curves-template*
+   :*gnuplot-time-series-with-lines-template*
+   :*gnuplot-histograms-per-country-template*
    :render-gnuplot-template))
 (in-package :cl-covid19.gnuplot-template)
 
 (djula:add-template-directory (asdf:system-relative-pathname :cl-covid19 "templates/"))
 
-(defparameter *gnuplot-with-filled-curves-template*
-  (djula:compile-template* "filled-curves.plt")
+(defparameter *gnuplot-time-series-with-filled-curves-template*
+  (djula:compile-template* "time-series-with-filled-curves.plt")
   "gnuplot(1) template for plotting time-series data with filled curves")
 
-(defparameter *gnuplot-with-lines-template*
-  (djula:compile-template* "lines.plt")
+(defparameter *gnuplot-time-series-with-lines-template*
+  (djula:compile-template* "time-series-with-lines.plt")
   "gnuplot(1) template for plotting time-series data with lines")
+
+(defparameter *gnuplot-histograms-per-country-template*
+  (djula:compile-template* "histograms-per-country.plt")
+  "gnuplot(1) template for plotting histograms per country")
 
 (defun render-gnuplot-template (template &rest rest)
   "Renders the given gnuplot(1) template"
