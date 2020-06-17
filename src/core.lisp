@@ -72,11 +72,12 @@
     (when items
       (ascii-table:display table))))
 
-(defun write-csv (items &key stream)
+(defun write-csv (items &key stream (include-headers t))
   "Writes the given items in CSV format"
   (let ((headers (plist-keys (first items)))
         (output (or stream (make-string-output-stream))))
-    (cl-csv:write-csv-row headers :stream output)
+    (when include-headers
+      (cl-csv:write-csv-row headers :stream output))
     (dolist (item items)
       (cl-csv:write-csv-row (plist-values item) :stream output))
     (unless stream
