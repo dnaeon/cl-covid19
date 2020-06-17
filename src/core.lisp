@@ -38,7 +38,8 @@
    :fetch-time-series-global
    :fetch-top-countries-by
    :plot-data
-   :plot-time-series-for-country))
+   :plot-time-series-for-country
+   :plot-time-series-global))
 (in-package :cl-covid19.core)
 
 (defparameter *default-result-limit*
@@ -167,6 +168,14 @@
                (fetch-time-series-for-country db-conn country :limit limit))
              template
              :title country))
+
+(defun plot-time-series-global (db-conn &key (template *gnuplot-with-filled-curves-template*) (limit *default-result-limit*))
+  "Plot global time series"
+  (log:debug "Plotting global time series")
+  (plot-data (lambda ()
+               (fetch-time-series-global db-conn :limit limit))
+             template
+             :title "Global"))
 
 (defun plot-data (data-fun template &rest rest)
   "Plot the data returned by DATA-FUN using the given TEMPLATE"
