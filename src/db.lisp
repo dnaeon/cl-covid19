@@ -20,10 +20,7 @@
 (in-package :cl-covid19.db)
 
 (defparameter *migrations-path*
-  (let* ((system (asdf:find-system :cl-covid19))
-         (system-path (slot-value system 'asdf/component:absolute-pathname)))
-    (merge-pathnames (make-pathname :directory '(:relative "migrations"))
-                     system-path))
+  (asdf:system-relative-pathname :cl-covid19 "migrations/")
   "Path to the SQL migrations")
 
 (defun make-db-conn (db-path)
