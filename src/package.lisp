@@ -39,8 +39,7 @@
    :*gnuplot-histograms-per-country-template*
    :*gnuplot-time-series-with-filled-curves-new-cases-template*
    :*gnuplot-time-series-with-lines-new-cases-template*
-   :render-gnuplot-template
-   )
+   :render-gnuplot-template)
   (:import-from
    :cl-covid19.core
    :*default-result-limit*
@@ -118,4 +117,3 @@
    :plot-top-countries-by
    :plot-data))
 (in-package :cl-covid19)
-
