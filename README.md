@@ -363,6 +363,19 @@ or on global scale are
 `COVID19:*GNUPLOT-TIME-SERIES-WITH-FILLED-CURVES-NEW-CASES*` and
 `COVID19:*GNUPLOT-TIME-SERIES-WITH-LINES-NEW-CASES*`.
 
+``` common-lisp
+CL-USER> (covid19:plot-time-series-for-country *db-conn*
+                                               "Italy"
+                                               :limit 100
+                                               :template covid19:*gnuplot-time-series-with-filled-curves-new-cases-template*)
+NIL
+```
+
+The graph generated looks like this, which plots the new cases on
+daily basis.
+
+![COVID-19 Cases in IT with lines](./images/covid19-it-new-cases.png)
+
 You could also render any of the existing `gnuplot(1)` templates
 defined in the `COVID19.GNUPLOT-TEMPLATE` package and customize them
 further, if needed.
