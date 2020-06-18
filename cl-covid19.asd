@@ -26,8 +26,24 @@
                :cl-migratum.driver.sql
                :tmpdir
                :djula)
-  :components ((:module "core"
+  :components ((:module "migrations"
+                :pathname #P"migrations/"
+                :components ((:static-file "20200608135822-create_countries_table.down.sql")
+                             (:static-file "20200608135822-create_countries_table.up.sql")
+                             (:static-file "20200611230626-add_time_series_table.down.sql")
+                             (:static-file "20200611230626-add_time_series_table.up.sql")
+                             (:static-file "20200611234716-add_time_series_views.down.sql")
+                             (:static-file "20200611234716-add_time_series_views.up.sql")))
+               (:module "gnuplot-templates"
+                :pathname #P"templates/"
+                :components ((:static-file "histograms-per-country.plt")
+                             (:static-file "time-series-with-filled-curves-new-cases.plt")
+                             (:static-file "time-series-with-filled-curves.plt")
+                             (:static-file "time-series-with-lines-new-cases.plt")
+                             (:static-file "time-series-with-lines.plt")))
+               (:module "core"
                 :pathname #P"src/"
+                :depends-on ("migrations" "gnuplot-templates")
                 :serial t
                 :components ((:file "util")
                              (:file "api")
@@ -37,5 +53,4 @@
                (:module "client-package"
                 :pathname #P"src/"
                 :depends-on ("core")
-                :components ((:file "package"))))
-  :in-order-to ((test-op (test-op "cl-covid19.test"))))
+                :components ((:file "package")))))
