@@ -16,7 +16,7 @@ offline.
 * [Quicklisp](https://www.quicklisp.org/beta/)
 * [SQLite3](https://sqlite.org) dev libraries
 * [gnuplot](http://gnuplot.sourceforge.net) for plotting graphs
-- [cl-migratum](https://github.com/dnaeon/cl-migratum) for database migrations
+* [cl-migratum](https://github.com/dnaeon/cl-migratum) for database migrations
 
 ## Installation
 
