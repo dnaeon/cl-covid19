@@ -15,7 +15,7 @@ set key outside right center
 set datafile separator comma
 set autoscale fix
 set style fill transparent solid 0.3
-plot '{{ datafile }}' using 1:6:(0) title 'New Confirmed' with filledcurves, \
-     '' using 1:7:(0) title 'New Deaths' with filledcurves, \
-     '' using 1:8:(0) title 'New Recovered' with filledcurves, \
-     '' using 1:9:(0) title 'New Active' with filledcurves
+plot '{{ datafile }}' using (column('timestamp')):(column('new_confirmed')):(0) title 'New Confirmed' with filledcurves, \
+     '' using (column('timestamp')):(column('new_deaths')):(0) title 'New Deaths' with filledcurves, \
+     '' using (column('timestamp')):(column('new_recovered')):(0) title 'New Recovered' with filledcurves, \
+     '' using (column('timestamp')):(column('new_active')):(0) title 'New Active' with filledcurves

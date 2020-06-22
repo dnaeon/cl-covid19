@@ -15,7 +15,7 @@ set key outside right center
 set datafile separator comma
 set autoscale fix
 set style fill transparent solid 0.3
-plot '{{ datafile }}' using 1:2:(0) title 'Confirmed' with lines linewidth 2, \
-     '' using 1:3:(0) title 'Deaths' with lines linewidth 2, \
-     '' using 1:4:(0) title 'Recovered' with lines linewidth 2, \
-     '' using 1:5:(0) title 'Active' with lines linewidth 2
+plot '{{ datafile }}' using (column('timestamp')):(column('confirmed')):(0) title 'Confirmed' with lines linewidth 2, \
+     '' using (column('timestamp')):(column('deaths')):(0) title 'Deaths' with lines linewidth 2, \
+     '' using (column('timestamp')):(column('recovered')):(0) title 'Recovered' with lines linewidth 2, \
+     '' using (column('timestamp')):(column('active')):(0) title 'Active' with lines linewidth 2

@@ -17,11 +17,11 @@ set style histogram rowstacked
 set boxwidth 1 relative
 set style fill solid 1.0 border -1
 
-plot '{{ datafile }}' using 2 title 'Confirmed', \
-     '' using 3 title 'Deaths', \
-     '' using 4 title 'Recovered', \
-     '' using 5 title 'Active', \
-     '' using 6 title 'New Confirmed', \
-     '' using 7 title 'New Deaths', \
-     '' using 8 title 'New Recovered', \
-     '' using 9:xticlabels(11) title 'New Active'
+plot '{{ datafile }}' using (column('confirmed')) title 'Confirmed', \
+     '' using (column('deaths')) title 'Deaths', \
+     '' using (column('recovered')) title 'Recovered', \
+     '' using (column('active')) title 'Active', \
+     '' using (column('new_confirmed')) title 'New Confirmed', \
+     '' using (column('new_deaths')) title 'New Deaths', \
+     '' using (column('new_recovered')) title 'New Recovered', \
+     '' using (column('new_active')):xticlabels(11) title 'New Active'
