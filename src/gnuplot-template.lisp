@@ -9,6 +9,7 @@
    :*gnuplot-histograms-per-country-template*
    :*gnuplot-time-series-with-filled-curves-new-cases-template*
    :*gnuplot-time-series-with-lines-new-cases-template*
+   :*gnuplot-time-series-animation-template*
    :render-gnuplot-template))
 (in-package :cl-covid19.gnuplot-template)
 
@@ -33,6 +34,10 @@
 (defparameter *gnuplot-time-series-with-lines-new-cases-template*
   (djula:compile-template* "time-series-with-lines-new-cases.plt")
   "gnuplot(1) template for plotting time-series data of new cases with lines")
+
+(defparameter *gnuplot-time-series-animation-template*
+  (djula:compile-template* "time-series-animation.plt")
+  "gnuplot(1) template for plotting an animation of time-series data with lines")
 
 (defun render-gnuplot-template (template &rest rest)
   "Renders the given gnuplot(1) template"
