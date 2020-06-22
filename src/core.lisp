@@ -157,10 +157,10 @@
 (defun fetch-top-countries-by (db-conn &key (column :confirmed) (limit *default-result-limit*) (offset 0))
   "Fetch top latest countries from the database, sorted by the given column"
   (log:debug "Fetching latest top countries by ~a column" column)
-  (unless (member column
+  (assert (member column
                   (table-columns db-conn "time_series_per_country_latest")
                   :test #'string-equal)
-    (error "Column ~a does not exist" column))
+          (column))
   (let ((query (format nil "SELECT * ~
                             FROM time_series_per_country_latest ~
                             ORDER BY ~a DESC ~
