@@ -104,29 +104,31 @@
                               LOWER(slug) = LOWER($1)")))
     (db-execute db-conn query name)))
 
-(defun fetch-countries (db-conn &key (limit *default-result-limit*))
+(defun fetch-countries (db-conn &key (limit *default-result-limit*) (offset 0))
   "Fetch countries from the database"
   (log:debug "Fetching countries from database")
-  (db-execute db-conn "SELECT * FROM country LIMIT ?" limit))
+  (db-execute db-conn "SELECT * FROM country LIMIT $1 OFFSET $2" limit offset))
 
-(defun fetch-time-series (db-conn &key (limit *default-result-limit*))
+(defun fetch-time-series (db-conn &key (limit *default-result-limit*) (offset 0))
   "Fetches time series data from the database"
   (log:debug "Fetching time series from database")
   (let ((query (format nil "SELECT * ~
                             FROM time_series_per_country ~
                             ORDER BY timestamp DESC ~
-                            LIMIT ?")))
-  (db-execute db-conn query limit)))
+                            LIMIT $1 ~
+                            OFFSET $2")))
+  (db-execute db-conn query limit offset)))
 
-(defun fetch-time-series-latest (db-conn &key (limit *default-result-limit*))
+(defun fetch-time-series-latest (db-conn &key (limit *default-result-limit*) (offset 0))
   "Fetch latest time series data from the database"
   (log:debug "Fetching latest time series from database")
   (let ((query (format nil "SELECT * ~
                             FROM time_series_per_country_latest ~
-                            LIMIT ?")))
-    (db-execute db-conn query limit)))
+                            LIMIT $1 ~
+                            OFFSET $2")))
+    (db-execute db-conn query limit offset)))
 
-(defun fetch-time-series-for-country (db-conn name &key (limit *default-result-limit*))
+(defun fetch-time-series-for-country (db-conn name &key (limit *default-result-limit*) (offset 0))
   "Fetch time series data for a given country from the database"
   (log:debug "Fetching time series for country ~a from database" name)
   (let ((query (format nil "SELECT * ~
@@ -138,19 +140,21 @@
                             OR ~
                                 LOWER(country_slug) = LOWER($1) ~
                             ORDER BY timestamp DESC ~
-                            LIMIT $2")))
-    (db-execute db-conn query name limit)))
+                            LIMIT $2 ~
+                            OFFSET $3")))
+    (db-execute db-conn query name limit offset)))
 
-(defun fetch-time-series-global (db-conn &key (limit *default-result-limit*))
+(defun fetch-time-series-global (db-conn &key (limit *default-result-limit*) (offset 0))
   "Fetch global time series data from the database"
   (log:debug "Fetching global time series data from database")
   (let ((query (format nil "SELECT * ~
                             FROM time_series_global ~
                             ORDER BY timestamp DESC ~
-                            LIMIT ?")))
-    (db-execute db-conn query limit)))
+                            LIMIT $1 ~
+                            OFFSET $2")))
+    (db-execute db-conn query limit offset)))
 
-(defun fetch-top-countries-by (db-conn &key (column :confirmed) (limit *default-result-limit*))
+(defun fetch-top-countries-by (db-conn &key (column :confirmed) (limit *default-result-limit*) (offset 0))
   "Fetch top latest countries from the database, sorted by the given column"
   (log:debug "Fetching latest top countries by ~a column" column)
   (unless (member column
@@ -160,8 +164,9 @@
   (let ((query (format nil "SELECT * ~
                             FROM time_series_per_country_latest ~
                             ORDER BY ~a DESC ~
-                            LIMIT $1" (string column))))
-    (db-execute db-conn query limit)))
+                            LIMIT $1 ~
+                            OFFSET $2" (string column))))
+    (db-execute db-conn query limit offset)))
 
 (defun plot-time-series-for-country (db-conn country &key (template *gnuplot-time-series-with-filled-curves-template*) (limit *default-result-limit*))
   "Plot time series data for a given country"
