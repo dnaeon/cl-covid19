@@ -8,7 +8,8 @@ set xtics rotate by 45 right
 set xlabel 'Country'
 set ylabel 'Cases'
 set key outside right center
-set datafile separator ','
+set datafile separator comma
+
 set autoscale fix
 
 set style data histograms

@@ -11,10 +11,10 @@ set xtics rotate by 45 right
 set xlabel 'Time'
 set ylabel 'Cases'
 set key outside right center
-set datafile separator ','
+set datafile separator comma
 set autoscale fix
 set style fill transparent solid 0.3
-plot '{{ datafile }}' using 1:2:(0) title 'Confirmed' with lines, \
-     '' using 1:3:(0) title 'Deaths' with lines, \
-     '' using 1:4:(0) title 'Recovered' with lines, \
-     '' using 1:5:(0) title 'Active' with lines
+plot '{{ datafile }}' using 1:2:(0) title 'Confirmed' with lines linewidth 2, \
+     '' using 1:3:(0) title 'Deaths' with lines linewidth 2, \
+     '' using 1:4:(0) title 'Recovered' with lines linewidth 2, \
+     '' using 1:5:(0) title 'Active' with lines linewidth 2

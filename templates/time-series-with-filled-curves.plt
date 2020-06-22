@@ -11,7 +11,7 @@ set xtics rotate by 45 right
 set xlabel 'Time'
 set ylabel 'Cases'
 set key outside right center
-set datafile separator ','
+set datafile separator comma
 set autoscale fix
 set style fill transparent solid 0.3
 plot '{{ datafile }}' using 1:2:(0) title 'Confirmed' with filledcurves, \
