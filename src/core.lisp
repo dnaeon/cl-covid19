@@ -109,14 +109,16 @@
   (log:debug "Fetching countries from database")
   (db-execute db-conn "SELECT * FROM country LIMIT $1 OFFSET $2" limit offset))
 
-(defun fetch-time-series (db-conn &key (limit *default-result-limit*) (offset 0))
+(defun fetch-time-series (db-conn &key (limit *default-result-limit*) (offset 0) (order :desc))
   "Fetches time series data from the database"
+  (assert (member order (list :asc :desc) :test #'string-equal)
+          (order))
   (log:debug "Fetching time series from database")
   (let ((query (format nil "SELECT * ~
                             FROM time_series_per_country ~
-                            ORDER BY timestamp DESC ~
+                            ORDER BY timestamp ~a ~
                             LIMIT $1 ~
-                            OFFSET $2")))
+                            OFFSET $2" order)))
   (db-execute db-conn query limit offset)))
 
 (defun fetch-time-series-latest (db-conn &key (limit *default-result-limit*) (offset 0))
@@ -128,8 +130,10 @@
                             OFFSET $2")))
     (db-execute db-conn query limit offset)))
 
-(defun fetch-time-series-for-country (db-conn name &key (limit *default-result-limit*) (offset 0))
+(defun fetch-time-series-for-country (db-conn name &key (limit *default-result-limit*) (offset 0) (order :desc))
   "Fetch time series data for a given country from the database"
+  (assert (member order (list :asc :desc) :test #'string-equal)
+          (order))
   (log:debug "Fetching time series for country ~a from database" name)
   (let ((query (format nil "SELECT * ~
                             FROM time_series_per_country ~
@@ -139,19 +143,21 @@
                                 LOWER(country_iso_code) = LOWER($1) ~
                             OR ~
                                 LOWER(country_slug) = LOWER($1) ~
-                            ORDER BY timestamp DESC ~
+                            ORDER BY timestamp ~a ~
                             LIMIT $2 ~
-                            OFFSET $3")))
+                            OFFSET $3" order)))
     (db-execute db-conn query name limit offset)))
 
-(defun fetch-time-series-global (db-conn &key (limit *default-result-limit*) (offset 0))
+(defun fetch-time-series-global (db-conn &key (limit *default-result-limit*) (offset 0) (order :desc))
   "Fetch global time series data from the database"
+  (assert (member order (list :asc :desc) :test #'string-equal)
+          (order))
   (log:debug "Fetching global time series data from database")
   (let ((query (format nil "SELECT * ~
                             FROM time_series_global ~
-                            ORDER BY timestamp DESC ~
+                            ORDER BY timestamp ~a ~
                             LIMIT $1 ~
-                            OFFSET $2")))
+                            OFFSET $2" order)))
     (db-execute db-conn query limit offset)))
 
 (defun fetch-top-countries-by (db-conn &key (column :confirmed) (limit *default-result-limit*) (offset 0))
@@ -165,7 +171,7 @@
                             FROM time_series_per_country_latest ~
                             ORDER BY ~a DESC ~
                             LIMIT $1 ~
-                            OFFSET $2" (string column))))
+                            OFFSET $2" column)))
     (db-execute db-conn query limit offset)))
 
 (defun plot-time-series-for-country (db-conn country &key (template *gnuplot-time-series-with-filled-curves-template*) (limit *default-result-limit*))
