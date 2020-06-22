@@ -202,7 +202,7 @@
       (unless data-points
         (error "No data points returned by function"))
       (with-open-file (out data-file :direction :output)
-        (write-csv data-points :stream out :include-headers nil))
+        (write-csv data-points :stream out :include-headers t))
       (with-open-file (out plt-file :direction :output)
         (write-string plt-script out))
       (uiop:run-program (list "gnuplot"
