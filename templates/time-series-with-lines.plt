@@ -7,6 +7,7 @@ set grid
 set xdata time
 set timefmt '%Y-%m-%dT%H:%M:%S+00:00Z'
 set format x '%Y-%m-%d'
+set mouse mouseformat 3 # timefmt
 set xtics rotate by 45 right
 set xlabel 'Time'
 set ylabel 'Cases'
