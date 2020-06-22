@@ -23,6 +23,7 @@
    :cl-covid19.gnuplot-template
    :*gnuplot-time-series-with-filled-curves-template*
    :*gnuplot-histograms-per-country-template*
+   :*gnuplot-time-series-animation-template*
    :render-gnuplot-template)
   (:export
    :*default-result-limit*
@@ -41,6 +42,7 @@
    :plot-data
    :plot-time-series-for-country
    :plot-time-series-global
+   :plot-time-series-global-animation
    :plot-top-countries-by))
 (in-package :cl-covid19.core)
 
@@ -197,6 +199,19 @@
                (fetch-top-countries-by db-conn :column column :limit limit))
              template
              :title (format nil "Top countries by ~a" column)))
+
+(defun plot-time-series-global-animation (db-conn destination &key (limit *default-result-limit*) (delay 10) (height 1280) (width 720) (line-width 4))
+  "PLot global time series data as an animation"
+  (log:debug "Plotting animation of global time series data")
+  (plot-data (lambda ()
+               (fetch-time-series-global db-conn :limit limit :order :asc))
+             *gnuplot-time-series-animation-template*
+             :destination (namestring destination)
+             :title "Global"
+             :delay delay
+             :height height
+             :width width
+             :line-width line-width))
 
 (defun plot-data (data-fun template &rest rest)
   "Plot the data returned by DATA-FUN using the given TEMPLATE"

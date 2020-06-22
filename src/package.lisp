@@ -39,6 +39,7 @@
    :*gnuplot-histograms-per-country-template*
    :*gnuplot-time-series-with-filled-curves-new-cases-template*
    :*gnuplot-time-series-with-lines-new-cases-template*
+   :*gnuplot-time-series-animation-template*
    :render-gnuplot-template)
   (:import-from
    :cl-covid19.core
@@ -57,6 +58,7 @@
    :fetch-top-countries-by
    :plot-time-series-for-country
    :plot-time-series-global
+   :plot-time-series-global-animation
    :plot-top-countries-by
    :plot-data)
   (:export
@@ -96,6 +98,7 @@
    :*gnuplot-histograms-per-country-template*
    :*gnuplot-time-series-with-filled-curves-new-cases-template*
    :*gnuplot-time-series-with-lines-new-cases-template*
+   :*gnuplot-time-series-animation-template*
    :render-gnuplot-template
 
    ;; core
@@ -114,6 +117,7 @@
    :fetch-top-countries-by
    :plot-time-series-for-country
    :plot-time-series-global
+   :plot-time-series-global-animation
    :plot-top-countries-by
    :plot-data))
 (in-package :cl-covid19)
