@@ -114,6 +114,18 @@ By default each fetch function will return up to
 the `:limit` keyword parameter of the fetch function you use, or
 rebind the above parameter to a value you want.
 
+Another common parameter used by the various fetch functions is
+`:offset`, which allows you to skip a given number of items and is
+useful for retrieving items in pages, when used in combination with
+the `:limit` keyword parameter.
+
+The `:order` keyword parameter, used in some fetching functions
+controls the order in which items will be returned based on the
+`timestamp` column. By default the results will be in descending order
+(most recent ones). If you need to return items in ascending order
+(oldest to newest ones), you can use the `:asc` value for the `:order`
+keyword parameter.
+
 Here's how to fetch ten countries using the `COVID19:FETCH-COUNTRIES`
 function. You can control the number of results to fetch by using the
 `:limit` keyword parameter.
@@ -375,6 +387,42 @@ The graph generated looks like this, which plots the new cases on
 daily basis.
 
 ![COVID-19 Cases in IT with lines](./images/covid19-it-new-cases.png)
+
+The `COVID19:PLOT-TIME-SERIES-GLOBAL-ANIMATION` function creates an
+animation of the cases using the global time series data.  When
+creating an animation you need to specify the destination, where the
+animation will be stored at. The `:limit` keyword parameter in the
+example below specifies the number of time series records in ascending
+order.
+
+``` common-lisp
+CL-USER> (covid19:plot-time-series-global-animation *db-conn*
+                                                    #P"/tmp/covid19-global.gif"
+                                                    :limit 200)
+NIL
+```
+
+The generated animation looks like this.
+
+![COVID-19 Global Cases Animation](./images/covid19-global.gif)
+
+Another function, which creates animations from time-series data is the
+`COVID19:PLOT-TIME-SERIES-FOR-COUNTRY-ANIMATION`.
+
+``` common-lisp
+CL-USER> (covid19:plot-time-series-for-country-animation *db-conn*
+                                                         "Italy"
+                                                         #P"/tmp/covid19-it.gif"
+                                                         :limit 200)
+NIL
+```
+
+The generated animation for a given country looks like this.
+
+![COVID-19 IT Cases Animation](./images/covid19-it.gif)
+
+The `:delay`, `:height`, `:width` and `:line-width` keyword parameters
+can be used to further customize the resulting animation.
 
 You could also render any of the existing `gnuplot(1)` templates
 defined in the `COVID19.GNUPLOT-TEMPLATE` package and customize them
