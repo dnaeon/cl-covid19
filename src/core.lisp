@@ -5,6 +5,7 @@
   (:import-from :ascii-table)
   (:import-from :cl-csv)
   (:import-from :log4cl)
+  (:import-from :cl-csv)
   (:import-from
    :cl-covid19.util
    :plist-keys
@@ -41,6 +42,7 @@
    :fetch-top-countries-by
    :plot-data
    :plot-time-series-for-country
+   :plot-time-series-for-country-animation
    :plot-time-series-global
    :plot-time-series-global-animation
    :plot-top-countries-by))
@@ -184,6 +186,19 @@
              template
              :title country))
 
+(defun plot-time-series-for-country-animation (db-conn country destination &key (limit *default-result-limit*) (delay 10) (height 1280) (width 720) (line-width 4))
+  "Plot global time series for a given country as an animation"
+  (log:debug "Plotting animation for country ~a" country)
+  (plot-data (lambda ()
+               (fetch-time-series-for-country db-conn country :limit limit :order :asc))
+             *gnuplot-time-series-animation-template*
+             :destination (namestring destination)
+             :title country
+             :delay delay
+             :height height
+             :width width
+             :line-width line-width))
+
 (defun plot-time-series-global (db-conn &key (template *gnuplot-time-series-with-filled-curves-template*) (limit *default-result-limit*))
   "Plot global time series"
   (log:debug "Plotting global time series")
@@ -192,16 +207,8 @@
              template
              :title "Global"))
 
-(defun plot-top-countries-by (db-conn &key (column :confirmed) (limit *default-result-limit*) (template *gnuplot-histograms-per-country-template*))
-  "Plot time series per country sorted by given column"
-  (log:debug "Plotting top countries by ~a" column)
-  (plot-data (lambda ()
-               (fetch-top-countries-by db-conn :column column :limit limit))
-             template
-             :title (format nil "Top countries by ~a" column)))
-
 (defun plot-time-series-global-animation (db-conn destination &key (limit *default-result-limit*) (delay 10) (height 1280) (width 720) (line-width 4))
-  "PLot global time series data as an animation"
+  "Plot global time series data as an animation"
   (log:debug "Plotting animation of global time series data")
   (plot-data (lambda ()
                (fetch-time-series-global db-conn :limit limit :order :asc))
@@ -212,6 +219,14 @@
              :height height
              :width width
              :line-width line-width))
+
+(defun plot-top-countries-by (db-conn &key (column :confirmed) (limit *default-result-limit*) (template *gnuplot-histograms-per-country-template*))
+  "Plot time series per country sorted by given column"
+  (log:debug "Plotting top countries by ~a" column)
+  (plot-data (lambda ()
+               (fetch-top-countries-by db-conn :column column :limit limit))
+             template
+             :title (format nil "Top countries by ~a" column)))
 
 (defun plot-data (data-fun template &rest rest)
   "Plot the data returned by DATA-FUN using the given TEMPLATE"
