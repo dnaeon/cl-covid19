@@ -37,6 +37,11 @@ CL-USER> (ql:quickload :cl-covid19)
 
 The following section provides examples to get you started.
 
+## Sample database
+
+You can find an already populated database, that you can use in the
+[databases](./databases/) directory of this repo.
+
 ### Create Database
 
 First, we need to create a connection to the SQLite database.
