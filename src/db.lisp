@@ -41,7 +41,8 @@
    :table-info
    :table-columns
    :persist-countries-data
-   :persist-time-series-data))
+   :persist-time-series-data
+   :persiste-continents-data))
 (in-package :cl-covid19.db)
 
 (defparameter *migrations-path*
@@ -84,7 +85,7 @@
             info)))
 
 (defun persist-countries-data (items db-conn)
-  "Persists the given ITEMS representing countries with the database"
+  "Persists the given ITEMS into the database, which represent countries"
   (log:debug "Persisting COUNTRY data")
   (let* ((stmt (format nil "INSERT ~
                             INTO country (iso_code, name, slug) ~
@@ -103,7 +104,7 @@
           (cl-dbi:execute prepared (list iso-code name slug)))))))
 
 (defun persist-time-series-data (items db-conn)
-  "Persists the given ITEMS representing time series data"
+  "Persists the given ITEMS into the database, which represent time series data"
   (log:debug "Persisting TIME SERIES data")
   (let* ((stmt (format nil "INSERT ~
                             INTO time_series (country_id, confirmed, deaths, recovered, active, timestamp) ~
@@ -134,3 +135,20 @@
                                 recovered
                                 active
                                 timestamp)))))))
+
+(defun persist-continents-data (items db-conn)
+  "Persists the given ITEMS into the database, which represent continents"
+  (log:debug "Persisting CONTINENT data")
+  (let* ((stmt (format nil "INSERT ~
+                            INTO continent (iso_code, name) ~
+                            VALUES ($1, $2) ~
+                            ON CONFLICT (iso_code) DO UPDATE ~
+                            SET ~
+                                name = $2"))
+         (prepared (cl-dbi:prepare db-conn stmt)))
+    (cl-dbi:with-transaction db-conn
+      (dolist (item items)
+        (let ((iso-code (getf item :|Code|))
+              (name (getf item :|Name|)))
+          (log:debug "Persisting CONTINENT ~a (~a)" name iso-code)
+          (cl-dbi:execute prepared (list iso-code name)))))))
