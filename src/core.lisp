@@ -40,6 +40,7 @@
    :persist-continents-data
    :persist-countries-data
    :persist-time-series-data
+   :link-countries-with-continents
    :db-execute
    :table-columns)
   (:import-from
@@ -85,6 +86,10 @@
   (asdf:system-relative-pathname :cl-covid19 "misc/continent-codes.json")
   "Path to the file which contains the continents data")
 
+(defparameter *countries-and-continents-data-path*
+  (asdf:system-relative-pathname :cl-covid19 "misc/country-and-continent-codes-list.json")
+  "Path to the file which contains the mapping of countries and continents")
+
 (defun parse-json-data (path)
   "Parses the JSON document from the given PATH"
   (let ((data (alexandria:read-file-into-string path)))
@@ -104,9 +109,10 @@
 
 (defun update-all-data (api-client db-conn)
   "Updates the local database with the data retrieved from the remote API"
-  (log:debug "Updating database with latest data from remote API")
+  (log:debug "Updating database with latest data")
   (update-continents-data db-conn)
   (update-countries-data api-client db-conn)
+  (link-countries-with-continents (parse-json-data *countries-and-continents-data-path*) db-conn)
   (update-time-series-data api-client db-conn)
   t)
 
