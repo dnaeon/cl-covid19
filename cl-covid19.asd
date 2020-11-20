@@ -33,7 +33,9 @@
                              (:static-file "20200611230626-add_time_series_table.down.sql")
                              (:static-file "20200611230626-add_time_series_table.up.sql")
                              (:static-file "20200611234716-add_time_series_views.down.sql")
-                             (:static-file "20200611234716-add_time_series_views.up.sql")))
+                             (:static-file "20200611234716-add_time_series_views.up.sql")
+                             (:static-file "20201120141202-add_continent_table.down.sql")
+                             (:static-file "20201120141202-add_continent_table.up.sql")))
                (:module "gnuplot-templates"
                 :pathname #P"templates/"
                 :components ((:static-file "histograms-per-country.plt")
@@ -41,9 +43,13 @@
                              (:static-file "time-series-with-filled-curves.plt")
                              (:static-file "time-series-with-lines-new-cases.plt")
                              (:static-file "time-series-with-lines.plt")))
+               (:module "misc"
+                :pathname #P"misc/"
+                :components ((:static-file "continent-codes.json")
+                             (:static-file "country-and-continent-codes-list.json")))
                (:module "core"
                 :pathname #P"src/"
-                :depends-on ("migrations" "gnuplot-templates")
+                :depends-on ("migrations" "gnuplot-templates" "misc")
                 :serial t
                 :components ((:file "util")
                              (:file "api")
