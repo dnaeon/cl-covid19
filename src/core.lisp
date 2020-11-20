@@ -103,6 +103,7 @@
 (defun update-all-data (api-client db-conn)
   "Updates the local database with the data retrieved from the remote API"
   (log:debug "Updating database with latest data from remote API")
+  (update-continents-data db-conn)
   (update-countries-data api-client db-conn)
   (update-time-series-data api-client db-conn)
   t)
