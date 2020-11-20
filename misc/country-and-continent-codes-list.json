@@ -1656,6 +1656,14 @@
     "Two_Letter_Country_Code": "RS"
   },
   {
+    "Continent_Code": "EU",
+    "Continent_Name": "Europe",
+    "Country_Name": "Kosovo, Republic of",
+    "Country_Number": -1,
+    "Three_Letter_Country_Code": "XKX",
+    "Two_Letter_Country_Code": "XK"
+  },
+  {
     "Continent_Code": "AF",
     "Continent_Name": "Africa",
     "Country_Name": "Seychelles, Republic of",
