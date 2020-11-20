@@ -28,15 +28,16 @@
   (:use :cl)
   (:nicknames :covid19.core)
   (:import-from :ascii-table)
-  (:import-from :cl-csv)
   (:import-from :log4cl)
   (:import-from :cl-csv)
+  (:import-from :jonathan)
   (:import-from
    :cl-covid19.util
    :plist-keys
    :plist-values)
   (:import-from
    :cl-covid19.db
+   :persist-continents-data
    :persist-countries-data
    :persist-time-series-data
    :db-execute
@@ -53,6 +54,7 @@
    :render-gnuplot-template)
   (:export
    :*default-result-limit*
+   :update-continents-data
    :update-countries-data
    :update-time-series-data
    :update-all-data
@@ -76,6 +78,21 @@
 (defparameter *default-result-limit*
   10
   "The default number of items to return when fetching data from the database")
+
+(defparameter *continents-data-path*
+  (asdf:system-relative-pathname :cl-covid19 "misc/continent-codes.json")
+  "Path to the file which contains the continents data")
+
+(defun parse-json-data (path)
+  "Parses the JSON document from the given PATH"
+  (let ((data (alexandria:read-file-into-string path)))
+    (jonathan:parse data)))
+
+(defun update-continents-data (db-conn)
+  "Updates the local database with the latest continents data"
+  (log:debug "Updating database with latest continents data")
+  (let ((items (parse-json-data *continents-data-path*)))
+    (persist-continents-data items db-conn)))
 
 (defun update-countries-data (api-client db-conn)
   "Updates the local database with the latest countries data from the remote API"
