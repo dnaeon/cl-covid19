@@ -60,6 +60,8 @@
    :update-all-data
    :write-csv
    :display-table
+   :fetch-continent
+   :fetch-continents
    :fetch-country
    :fetch-countries
    :fetch-time-series
@@ -138,6 +140,21 @@
       (cl-csv:write-csv-row (plist-values item) :stream output))
     (unless stream
       (get-output-stream-string output))))
+
+(defun fetch-continent (db-conn name)
+  "Fetch a continent by name or code from the database"
+  (log:debug "Fetching continent ~a from database" name)
+  (let ((query (format nil "SELECT * FROM continent ~
+                            WHERE ~
+                              LOWER(name) = LOWER($1) ~
+                            OR
+                              LOWER(iso_code) = LOWER($1)")))
+    (db-execute db-conn query name)))
+
+(defun fetch-continents (db-conn &key (limit *default-result-limit*) (offset 0))
+  "Fetch continents from the database"
+  (log:debug "Fetching continents from the database")
+  (db-execute db-conn "SELECT * FROM continent LIMIT $1 OFFSET $2" limit offset))
 
 (defun fetch-country (db-conn name)
   "Fetch a country by name from the database"

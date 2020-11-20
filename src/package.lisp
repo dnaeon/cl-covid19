@@ -76,6 +76,8 @@
    :update-all-data
    :display-table
    :write-csv
+   :fetch-continent
+   :fetch-continents
    :fetch-country
    :fetch-countries
    :fetch-time-series
@@ -138,6 +140,8 @@
    :update-all-data
    :display-table
    :write-csv
+   :fetch-continent
+   :fetch-continents
    :fetch-country
    :fetch-countries
    :fetch-time-series

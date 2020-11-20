@@ -77,6 +77,7 @@ The local SQLite database provides the following tables and views.
 | Name                             | Description                                        |
 |----------------------------------|----------------------------------------------------|
 | `migration`                      | Contains the applied database migrations           |
+| `continent`                      | Contains rows about each continent                 |
 | `country`                        | Contains the countries fetched from the remote API |
 | `time_series`                    | Time series for each country and location          |
 | `time_series_global`             | Aggregated global time series                      |
