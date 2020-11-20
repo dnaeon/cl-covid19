@@ -35,7 +35,9 @@
                              (:static-file "20200611234716-add_time_series_views.down.sql")
                              (:static-file "20200611234716-add_time_series_views.up.sql")
                              (:static-file "20201120141202-add_continent_table.down.sql")
-                             (:static-file "20201120141202-add_continent_table.up.sql")))
+                             (:static-file "20201120141202-add_continent_table.up.sql")
+                             (:static-file "20201120154405-add_continent_to_country_table.down.sql")
+                             (:static-file "20201120154405-add_continent_to_country_table.up.sql")))
                (:module "gnuplot-templates"
                 :pathname #P"templates/"
                 :components ((:static-file "histograms-per-country.plt")
