@@ -154,33 +154,21 @@
           (log:debug "Persisting CONTINENT ~a (~a)" name iso-code)
           (cl-dbi:execute prepared (list iso-code name)))))))
 
-(defun link-countries-with-continents (continents-mapping db-conn)
+(defun link-countries-with-continents (items db-conn)
   "Links countries with continents"
   (log:debug "Linking COUNTRY with CONTINENT")
-  (let ((countries (db-execute db-conn "SELECT id, name, iso_code FROM country"))
-        (find-country (lambda (country-code)
-                        (find country-code continents-mapping
-                              :test #'equal
-                              :key (lambda (item)
-                                     (getf item :|Two_Letter_Country_Code|))))))
-    (cl-dbi:with-transaction db-conn
-      (dolist (country countries)
-        (let* ((country-id (getf country :|id|))
-               (country-code (getf country :|iso_code|))
-               (country-name (getf country :|name|))
-               (continent (funcall find-country country-code))
-               (continent-code (getf continent :|Continent_Code|))
-               (continent-name (getf continent :|Continent_Name|))
-               (continent-rows (db-execute db-conn
-                                           "SELECT id FROM continent WHERE iso_code = $1"
-                                           continent-code))
-               (continent-id (getf (first continent-rows) :|id|))
-               (stmt (format nil "UPDATE country ~
-                                  SET ~
-                                    continent_id = $1 ~
-                                  WHERE id = $2"))
-               (prepared (cl-dbi:prepare db-conn stmt)))
-          (when continent-id
-            (log:debug "Linking country ~a (~a) with continent ~a (~a)"
-                       country-name country-code continent-name continent-code)
-            (cl-dbi:execute prepared (list continent-id country-id))))))))
+  (cl-dbi:with-transaction db-conn
+    (dolist (item items)
+      (let* ((country-name (getf item :|Country_Name|))
+             (country-code (getf item :|Two_Letter_Country_Code|))
+             (continent-code (getf item :|Continent_Code|))
+             (continent-name (getf item :|Continent_Name|))
+             (stmt (format nil "UPDATE
+                                    country ~
+                                SET ~
+                                    continent_id = (SELECT id FROM continent WHERE iso_code = $1) ~
+                                WHERE iso_code = $2"))
+             (prepared (cl-dbi:prepare db-conn stmt)))
+        (log:debug "Linking country ~a (~a) with continent ~a (~a)"
+                   country-name country-code continent-name continent-code)
+        (cl-dbi:execute prepared (list continent-code country-code))))))

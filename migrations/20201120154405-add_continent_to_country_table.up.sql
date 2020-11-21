@@ -16,7 +16,8 @@ CREATE TABLE country (
     iso_code CHARACTER VARYING(2) NOT NULL,
     name CHARACTER VARYING(255) NOT NULL,
     slug CHARACTER VARYING(255) NOT NULL,
-    continent_id INTEGER,
+    continent_id INTEGER DEFAULT NULL,
+    numeric_code INTEGER DEFAULT NULL,
 
     CONSTRAINT country_iso_code_key UNIQUE (iso_code),
     CONSTRAINT country_continent_id_fkey FOREIGN KEY (continent_id)
