@@ -43,7 +43,8 @@
    :persist-countries-data
    :persist-time-series-data
    :persist-continents-data
-   :link-countries-with-continents))
+   :link-countries-with-continents
+   :set-numeric-code-for-countries))
 (in-package :cl-covid19.db)
 
 (defparameter *migrations-path*
@@ -154,13 +155,32 @@
           (log:debug "Persisting CONTINENT ~a (~a)" name iso-code)
           (cl-dbi:execute prepared (list iso-code name)))))))
 
+(defun set-numeric-code-for-countries (items db-conn)
+  "Sets the numeric code for each country using the ITEMS data"
+  (log:debug "Setting numeric code for COUNTRY")
+  (cl-dbi:with-transaction db-conn
+    (dolist (item items)
+      (let* ((country-name (getf item :|Country_Name|))
+             (country-iso-code (getf item :|Two_Letter_Country_Code|))
+             (country-numeric-code (getf item :|Country_Number|))
+             (stmt (format nil "UPDATE ~
+                                    country ~
+                                SET
+                                    numeric_code = $1 ~
+                                WHERE ~
+                                    iso_code = $2"))
+             (prepared (cl-dbi:prepare db-conn stmt)))
+        (log:debug "Setting numeric code for country ~a (~a) to ~a"
+                   country-name country-iso-code country-numeric-code)
+        (cl-dbi:execute prepared (list country-numeric-code country-iso-code))))))
+
 (defun link-countries-with-continents (items db-conn)
   "Links countries with continents"
   (log:debug "Linking COUNTRY with CONTINENT")
   (cl-dbi:with-transaction db-conn
     (dolist (item items)
       (let* ((country-name (getf item :|Country_Name|))
-             (country-code (getf item :|Two_Letter_Country_Code|))
+             (country-iso-code (getf item :|Two_Letter_Country_Code|))
              (continent-code (getf item :|Continent_Code|))
              (continent-name (getf item :|Continent_Name|))
              (stmt (format nil "UPDATE
@@ -170,5 +190,5 @@
                                 WHERE iso_code = $2"))
              (prepared (cl-dbi:prepare db-conn stmt)))
         (log:debug "Linking country ~a (~a) with continent ~a (~a)"
-                   country-name country-code continent-name continent-code)
-        (cl-dbi:execute prepared (list continent-code country-code))))))
+                   country-name country-iso-code continent-name continent-code)
+        (cl-dbi:execute prepared (list continent-code country-iso-code))))))

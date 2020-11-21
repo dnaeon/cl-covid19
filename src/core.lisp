@@ -41,6 +41,7 @@
    :persist-countries-data
    :persist-time-series-data
    :link-countries-with-continents
+   :set-numeric-code-for-countries
    :db-execute
    :table-columns)
   (:import-from
@@ -112,7 +113,16 @@
   (log:debug "Updating database with latest data")
   (update-continents-data db-conn)
   (update-countries-data api-client db-conn)
-  (link-countries-with-continents (parse-json-data *countries-and-continents-data-path*) db-conn)
+
+  ;; The countries-and-continents data is used for filling in the
+  ;; numeric code for each country and also for linking the
+  ;; countries with their respective continent.
+  ;; The COVID19 API doesn't provide numeric code, so we use the
+  ;; continents mapping to fill in that gap.
+  (let ((items (parse-json-data *countries-and-continents-data-path*)))
+    (set-numeric-code-for-countries items db-conn)
+    (link-countries-with-continents items db-conn))
+
   (update-time-series-data api-client db-conn)
   t)
 
