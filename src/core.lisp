@@ -70,6 +70,7 @@
    :fetch-time-series-latest
    :fetch-time-series-for-country
    :fetch-time-series-global
+   :fetch-time-series-for-continent
    :fetch-top-countries-by
    :plot-data
    :plot-time-series-for-country
@@ -210,9 +211,25 @@
                             OFFSET $2")))
     (db-execute db-conn query limit offset)))
 
+(defun fetch-time-series-for-continent (db-conn name &key (limit *default-result-limit*) (offset 0) (order :desc))
+  "Fetch time series data for a given continent from the database"
+  (assert (member order (list :asc :desc) :test #'equal)
+          (order))
+  (log:debug "Fetching time series for continent ~a from database" name)
+  (let ((query (format nil "SELECT * ~
+                            FROM time_series_per_continent ~
+                            WHERE ~
+                                LOWER(continent_name) = LOWER($1) ~
+                            OR ~
+                                LOWER(continent_iso_code) = LOWER($1) ~
+                            ORDER BY timestamp ~a ~
+                            LIMIT $2 ~
+                            OFFSET $3" order)))
+    (db-execute db-conn query name limit offset)))
+
 (defun fetch-time-series-for-country (db-conn name &key (limit *default-result-limit*) (offset 0) (order :desc))
   "Fetch time series data for a given country from the database"
-  (assert (member order (list :asc :desc) :test #'string-equal)
+  (assert (member order (list :asc :desc) :test #'equal)
           (order))
   (log:debug "Fetching time series for country ~a from database" name)
   (let ((query (format nil "SELECT * ~
