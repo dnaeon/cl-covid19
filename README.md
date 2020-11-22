@@ -85,6 +85,8 @@ The local SQLite database provides the following tables and views.
 | `time_series_per_country_latest`   | Latest time series data per country                |
 | `time_series_per_continent`        | Time series data per continent                     |
 | `time_series_per_continent_latest` | Latest time series data per continent              |
+| `population`                       | Population for each country on yearly basis        |
+| `population_per_country`           | A view which joins `country` and `population`      |
 
 ### Create API Client
 
