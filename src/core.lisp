@@ -40,6 +40,7 @@
    :persist-continents-data
    :persist-countries-data
    :persist-time-series-data
+   :persist-population-data
    :link-countries-with-continents
    :set-numeric-code-for-countries
    :db-execute
@@ -60,6 +61,7 @@
    :update-continents-data
    :update-countries-data
    :update-time-series-data
+   :update-population-data
    :update-all-data
    :write-csv
    :display-table
@@ -94,10 +96,52 @@
   (asdf:system-relative-pathname :cl-covid19 "misc/country-and-continent-codes-list.json")
   "Path to the file which contains the mapping of countries and continents")
 
+(defparameter *population-data-path*
+  (asdf:system-relative-pathname :cl-covid19 "misc/UN_Population_2019.csv")
+  "Path to the file which contains population data")
+
 (defun parse-json-data (path)
   "Parses the JSON document from the given PATH"
   (let ((data (alexandria:read-file-into-string path)))
     (jonathan:parse data)))
+
+(defun parse-population-data (path)
+  "Parses the CSV file from PATH, which contains world population data from the UN"
+  (let* ((result nil)
+         (data-as-str (alexandria:read-file-into-string path))
+         (rows (cl-csv:read-csv data-as-str))
+         (headers-row (first rows))
+
+         ;; Throw away the `Country` and `Country Code` headers
+         (headers (mapcar #'parse-integer (nthcdr 2 headers-row))))
+    (dolist (row (rest rows)) ;; Skip header values
+      (let* ((country-name (first row))
+             (country-numeric-code (parse-integer (second row)))
+             (data-cells (mapcar #'parse-integer (nthcdr 2 row)))
+             (population (mapcar (lambda (year population)
+                                   (list :year year
+                                         :population (* population 1000)
+                                         :country-name country-name
+                                         :country-numeric-code country-numeric-code))
+                                 headers data-cells)))
+        (setf result (concatenate 'list result population))))
+    result))
+
+(defun update-population-data (db-conn)
+  "Updates the local database with the latest population data"
+  ;; Here we filter only the countries for which we know of.  The UN
+  ;; population dataset contains more countries than what the COVID19
+  ;; API exposes, so we set population only for the known countries.
+  (log:debug "Updating database with latest population data")
+  (let* ((known-countries (db-execute db-conn "SELECT numeric_code FROM country"))
+         (known-country-ids (mapcar (lambda (item)
+                                      (getf item :|numeric_code|))
+                                    known-countries))
+         (all-items (parse-population-data *population-data-path*))
+         (filtered-items (remove-if-not (lambda (item)
+                                          (member (getf item :country-numeric-code) known-country-ids))
+                                        all-items)))
+   (persist-population-data filtered-items db-conn)))
 
 (defun update-continents-data (db-conn)
   "Updates the local database with the latest continents data"
@@ -126,6 +170,7 @@
     (set-numeric-code-for-countries items db-conn)
     (link-countries-with-continents items db-conn))
 
+  (update-population-data db-conn)
   (update-time-series-data api-client db-conn)
   t)
 

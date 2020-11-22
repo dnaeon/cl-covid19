@@ -53,7 +53,8 @@
    :table-columns
    :persist-countries-data
    :persist-time-series-data
-   :persist-continents-data)
+   :persist-continents-data
+   :persist-population-data)
   (:import-from
    :cl-covid19.util
    :plist-keys
@@ -74,6 +75,7 @@
    :update-countries-data
    :update-time-series-data
    :update-all-data
+   :update-population-data
    :display-table
    :write-csv
    :fetch-continent
@@ -120,6 +122,7 @@
    :persist-countries-data
    :persist-time-series-data
    :persist-continents-data
+   :persist-population-data
 
    ;; util
    :plist-keys
@@ -139,6 +142,7 @@
    :update-continents-data
    :update-countries-data
    :update-time-series-data
+   :update-population-data
    :update-all-data
    :display-table
    :write-csv

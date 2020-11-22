@@ -43,6 +43,7 @@
    :persist-countries-data
    :persist-time-series-data
    :persist-continents-data
+   :persist-population-data
    :link-countries-with-continents
    :set-numeric-code-for-countries))
 (in-package :cl-covid19.db)
@@ -85,6 +86,30 @@
     (mapcar (lambda (item)
               (getf item :|name|))
             info)))
+
+(defun persist-population-data (items db-conn)
+  "Persists the given ITEMS into the database, which represent population stats per country"
+  (log:debug "Persisting POPULATION data")
+  (let* ((stmt (format nil "INSERT ~
+                            INTO population (year, people, country_id) ~
+                            VALUES (
+                                $1, ~
+                                $2, ~
+                                (SELECT id FROM country WHERE numeric_code = $3) ~
+                            ) ~
+                            ON CONFLICT (year, country_id) DO UPDATE ~
+                            SET ~
+                                people = $2"))
+         (prepared (cl-dbi:prepare db-conn stmt)))
+    (cl-dbi:with-transaction db-conn
+      (dolist (item items)
+        (let ((year (getf item :year))
+              (population (getf item :population))
+              (country-name (getf item :country-name))
+              (country-numeric-code (getf item :country-numeric-code)))
+          (log:debug "Persisting population for country ~a (numeric code ~a) to ~a @ ~a"
+                     country-name country-numeric-code population year)
+          (cl-dbi:execute prepared (list year population country-numeric-code)))))))
 
 (defun persist-countries-data (items db-conn)
   "Persists the given ITEMS into the database, which represent countries"
