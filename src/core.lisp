@@ -53,6 +53,7 @@
    :*gnuplot-time-series-with-filled-curves-template*
    :*gnuplot-histograms-per-country-template*
    :*gnuplot-time-series-animation-template*
+   :*gnuplot-time-series-with-lines-template*
    :render-gnuplot-template)
   (:export
    :*default-result-limit*
@@ -75,6 +76,7 @@
    :plot-data
    :plot-time-series-for-country
    :plot-time-series-for-country-animation
+   :plot-time-series-for-continent
    :plot-time-series-global
    :plot-time-series-global-animation
    :plot-top-countries-by))
@@ -270,6 +272,14 @@
                             LIMIT $1 ~
                             OFFSET $2" column)))
     (db-execute db-conn query limit offset)))
+
+(defun plot-time-series-for-continent (db-conn continent &key (template *gnuplot-time-series-with-lines-template*) (limit *default-result-limit*))
+  "Plot time series data for a given continent"
+  (log:debug "Plotting time series data for continent ~a" continent)
+  (plot-data (lambda ()
+               (fetch-time-series-for-continent db-conn continent :limit limit))
+             template
+             :title continent))
 
 (defun plot-time-series-for-country (db-conn country &key (template *gnuplot-time-series-with-filled-curves-template*) (limit *default-result-limit*))
   "Plot time series data for a given country"

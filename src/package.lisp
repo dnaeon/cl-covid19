@@ -88,6 +88,7 @@
    :fetch-top-countries-by
    :plot-time-series-for-country
    :plot-time-series-for-country-animation
+   :plot-time-series-for-continent
    :plot-time-series-global
    :plot-time-series-global-animation
    :plot-top-countries-by
@@ -153,6 +154,7 @@
    :fetch-top-countries-by
    :plot-time-series-for-country
    :plot-time-series-for-country-animation
+   :plot-time-series-for-continent
    :plot-time-series-global
    :plot-time-series-global-animation
    :plot-top-countries-by
