@@ -48,7 +48,8 @@
                (:module "misc"
                 :pathname #P"misc/"
                 :components ((:static-file "continent-codes.json")
-                             (:static-file "country-and-continent-codes-list.json")))
+                             (:static-file "country-and-continent-codes-list.json")
+                             (:static-file "UN_Population_2019.csv")))
                (:module "core"
                 :pathname #P"src/"
                 :depends-on ("migrations" "gnuplot-templates" "misc")
