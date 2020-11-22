@@ -393,7 +393,7 @@ by sorting them first on a given column. Here's an example to plot a histogram
 per each country based on the latest data from the `confirmed` column.
 
 ``` common-lisp
-CL-USER> (covid19:plot-top-countries-by *db-conn* :column :confirmed :limit 10)
+CL-USER> (covid19:plot-top-countries-by *db-conn* :column :confirmed :limit 100)
 NIL
 ```
 
@@ -414,10 +414,22 @@ CL-USER> (covid19:plot-time-series-for-country *db-conn*
 NIL
 ```
 
-The graph generated looks like this, which plots the new cases on
+The generated graph looks like this, which plots the new cases on
 daily basis.
 
 ![COVID-19 Cases in IT with lines](./images/covid19-it-new-cases.png)
+
+The `COVID19:PLOT-TIME-SERIES-FOR-CONTINENT` function is used for
+plotting time-series data for given continent. This example
+plots the time series data for `Europe`.
+
+``` common-lisp
+CL-USER> (covid19:plot-time-series-for-continent *db-conn* "Europe" :limit 300)
+```
+
+The generated graph looks like this.
+
+![COVID-19 Cases in Europe with lines](./images/covid19-europe.png)
 
 The `COVID19:PLOT-TIME-SERIES-GLOBAL-ANIMATION` function creates an
 animation of the cases using the global time series data.  When
