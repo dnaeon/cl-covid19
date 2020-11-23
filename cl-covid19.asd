@@ -37,7 +37,9 @@
                              (:static-file "20201120141202-add_continent_table.down.sql")
                              (:static-file "20201120141202-add_continent_table.up.sql")
                              (:static-file "20201120154405-add_continent_to_country_table.down.sql")
-                             (:static-file "20201120154405-add_continent_to_country_table.up.sql")))
+                             (:static-file "20201120154405-add_continent_to_country_table.up.sql")
+                             (:static-file "20201123170702-fix_time_series_per_continent_view.down.sql")
+                             (:static-file "20201123170702-fix_time_series_per_continent_view.up.sql")))
                (:module "gnuplot-templates"
                 :pathname #P"templates/"
                 :components ((:static-file "histograms-per-country.plt")
@@ -45,6 +47,9 @@
                              (:static-file "time-series-with-filled-curves.plt")
                              (:static-file "time-series-with-lines-new-cases.plt")
                              (:static-file "time-series-with-lines.plt")))
+               (:module "sample-database"
+                :pathname #P"databases/"
+                :components ((:static-file "covid19.db")))
                (:module "misc"
                 :pathname #P"misc/"
                 :components ((:static-file "continent-codes.json")
@@ -52,7 +57,7 @@
                              (:static-file "UN_Population_2019.csv")))
                (:module "core"
                 :pathname #P"src/"
-                :depends-on ("migrations" "gnuplot-templates" "misc")
+                :depends-on ("migrations" "gnuplot-templates" "misc" "sample-database")
                 :serial t
                 :components ((:file "util")
                              (:file "api")
