@@ -1,0 +1,1 @@
+DROP VIEW time_series_per_country_incidence;
