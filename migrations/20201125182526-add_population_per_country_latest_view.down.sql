@@ -1,0 +1,1 @@
+DROP VIEW population_per_country_latest;
