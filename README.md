@@ -2,7 +2,7 @@
 
 The `cl-covid19` system provides APIs for exploring and reviewing
 [COVID-19](https://en.wikipedia.org/wiki/Coronavirus_disease_2019)
-data in Common Lisp.
+data with Common Lisp, SQL, gnuplot and Grafana.
 
 The system fetches time-series data from the [COVID-19
 API](https://covid19api.com), and persists it locally in a
@@ -11,12 +11,16 @@ offline.
 
 ![COVID-19 Cases in BG with filledcurves](./images/covid19-bg-filledcurves.png)
 
+![COVID-19 Grafana Dashboard](./images/covid19-grafana-1.png)
+
 ## Requirements
 
 * [Quicklisp](https://www.quicklisp.org/beta/)
 * [SQLite3](https://sqlite.org) dev libraries
-* [gnuplot](http://gnuplot.sourceforge.net) for plotting graphs
 * [cl-migratum](https://github.com/dnaeon/cl-migratum) for database migrations
+* [gnuplot](http://gnuplot.sourceforge.net) for plotting graphs (optional)
+* [Grafana](https://grafana.com) (optional)
+* [PostgreSQL](https://www.postgresql.org) (optional)
 
 ## Installation
 
@@ -535,6 +539,31 @@ the [restore-into-pgsql.sh](./compat/restore-into-pgsql.sh) script.
 ``` shell
 env SQLITE_DB=/path/to/covid19.db PGSQL_DB=covid19 ./compat/restore-into-pgsql.sh
 ```
+
+## Grafana
+
+[Grafana](https://grafana.com) can be used for plotting the metrics
+from the `cl-covid19` database.
+
+As of now you can find the [world population
+dashboard](./grafana/world-population-dashboard.json) and [COVID-19
+dashboard](./grafana/covid19-dashboard.json) in the
+[grafana](./grafana) directory of this repository.
+
+The Grafana dashboards use the [PostgreSQL
+datasource](https://grafana.com/docs/grafana/latest/datasources/postgres/),
+so first make sure that you import the data from the SQLite database
+into a PostgreSQL database. You can do that easily by using the
+[restore-into-pgsql.sh](./compat/restore-into-pgsql.sh) script.
+
+Next, import the dashboards into your Grafana instance.
+
+Here are a few screenshots of the World Population and COVID-19
+dashboards in Grafana.
+
+![Grafana Population Per Country](./images/population-per-country.png)
+![Grafana COVID-19 Dashboard-1](./images/covid19-grafana-1.png)
+![Grafana COVID-19 Dashboard-2](./images/covid19-grafana-2.png)
 
 ## API Client Usage
 
