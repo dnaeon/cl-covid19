@@ -74,19 +74,21 @@ You should see similar output when applying the database migrations.
 
 The local SQLite database provides the following tables and views.
 
-| Name                               | Description                                        |
-|------------------------------------|----------------------------------------------------|
-| `migration`                        | Contains the applied database migrations           |
-| `continent`                        | Contains rows about each continent                 |
-| `country`                          | Contains the countries fetched from the remote API |
-| `time_series`                      | Time series for each country                       |
-| `time_series_global`               | Aggregated global time series                      |
-| `time_series_per_country`          | Time series data per country                       |
-| `time_series_per_country_latest`   | Latest time series data per country                |
-| `time_series_per_continent`        | Time series data per continent                     |
-| `time_series_per_continent_latest` | Latest time series data per continent              |
-| `population`                       | Population for each country on yearly basis        |
-| `population_per_country`           | A view which joins `country` and `population`      |
+| Name                                   | Description                                        |
+|----------------------------------------|----------------------------------------------------|
+| `migration`                            | Contains the applied database migrations           |
+| `continent`                            | Contains rows about each continent                 |
+| `country`                              | Contains the countries fetched from the remote API |
+| `time_series`                          | Time series for each country                       |
+| `time_series_global`                   | Aggregated global time series                      |
+| `time_series_per_country`              | Time series data per country                       |
+| `time_series_per_country_latest`       | Latest time series data per country                |
+| `time_series_per_country_weekly_avg`   | Last 7 days average of new cases per country       |
+| `time_series_per_country_biweekly_avg` | Last 14 days average of new cases per country      |
+| `time_series_per_continent`            | Time series data per continent                     |
+| `time_series_per_continent_latest`     | Latest time series data per continent              |
+| `population`                           | Population for each country on yearly basis        |
+| `population_per_country`               | A view which joins `country` and `population`      |
 
 ### Create API Client
 
