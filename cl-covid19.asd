@@ -43,7 +43,9 @@
                              (:static-file "20201124133919-add_weekly_avg_time_series_per_country.down.sql")
                              (:static-file "20201124133919-add_weekly_avg_time_series_per_country.up.sql")
                              (:static-file "20201125182526-add_population_per_country_latest_view.down.sql")
-                             (:static-file "20201125182526-add_population_per_country_latest_view.up.sql")))
+                             (:static-file "20201125182526-add_population_per_country_latest_view.up.sql")
+                             (:static-file "20201125183417-add_cases_per_country_per_million.down.sql")
+                             (:static-file "20201125183417-add_cases_per_country_per_million.up.sql")))
                (:module "gnuplot-templates"
                 :pathname #P"templates/"
                 :components ((:static-file "histograms-per-country.plt")

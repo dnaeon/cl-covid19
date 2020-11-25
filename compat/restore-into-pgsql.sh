@@ -10,7 +10,7 @@ SQLITE_DB=${SQLITE_DB:-"~/cl-covid19/databases/covid19.db"}
 PGSQL_DB=${PGSQL_DB:-"covid19"}
 
 # Tables to dump from the SQLite database
-SQLITE_TABLES="migration continent country population population_per_country time_series time_series_per_country time_series_global time_series_per_continent time_series_per_continent_latest time_series_per_country_latest time_series_per_country_weekly_avg time_series_per_country_biweekly_avg"
+SQLITE_TABLES="migration continent country population population_per_country time_series time_series_per_country time_series_global time_series_per_continent time_series_per_continent_latest time_series_per_country_latest time_series_per_country_weekly_avg time_series_per_country_biweekly_avg population_per_country_latest time_series_per_country_per_million"
 
 if [ ! -f "${SQLITE_DB}" ]; then
     echo "SQLite database does not exist: ${SQLITE_DB}"
