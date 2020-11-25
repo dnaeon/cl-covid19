@@ -526,6 +526,15 @@ evaluate the following expression.
 CL-USER> (log:config :debug)
 ```
 
+## Importing data into PostgreSQL
+
+You can import the data from the SQLite database into PostgreSQL using
+the [restore-into-pgsql.sh](./compat/restore-into-pgsql.sh) script.
+
+``` shell
+env SQLITE_DB=/path/to/covid19.db PGSQL_DB=covid19 ./compat/restore-into-pgsql.sh
+```
+
 ## API Client Usage
 
 This section provides some examples on how to use the API client for
