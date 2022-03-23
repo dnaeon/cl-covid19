@@ -30,7 +30,7 @@
   (:import-from :cl-dbi)
   (:import-from :cl-migratum)
   (:import-from :cl-migratum.provider.local-path)
-  (:import-from :cl-migratum.driver.sql)
+  (:import-from :cl-migratum.driver.dbi)
   (:import-from :log4cl)
   (:export
    :*migrations-path*
@@ -62,8 +62,8 @@
 
 (defun migrate-db (db-conn)
   "Migrates the database to the latest version"
-  (let* ((provider (cl-migratum.provider.local-path:make-local-path-provider *migrations-path*))
-         (driver (cl-migratum.driver.sql:make-sql-driver provider db-conn)))
+  (let* ((provider (cl-migratum.provider.local-path:make-local-path-provider (list *migrations-path*)))
+         (driver (cl-migratum.driver.dbi:make-driver provider db-conn)))
     (cl-migratum:provider-init provider)
     (cl-migratum:driver-init driver)
     (cl-migratum:apply-pending driver)))

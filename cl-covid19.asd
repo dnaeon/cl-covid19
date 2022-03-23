@@ -23,7 +23,7 @@
                :cl-ascii-table
                :cl-migratum
                :cl-migratum.provider.local-path
-               :cl-migratum.driver.sql
+               :cl-migratum.driver.dbi
                :tmpdir
                :djula)
   :components ((:module "migrations"
